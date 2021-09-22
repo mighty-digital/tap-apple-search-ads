@@ -194,3 +194,6 @@ $RECYCLE.BIN/
 config.json
 state.json
 catalog.json
+
+# Temporary files
+tmp/
