@@ -1,5 +1,5 @@
-from dataclasses import dataclass
-from typing import Dict, Tuple
+from dataclasses import dataclass, asdict
+from typing import Any, Dict, Mapping, Tuple
 
 import requests
 import singer
@@ -12,6 +12,17 @@ class AccessTokenValue:
     access_token: str
     token_type: str
     expires_in: int
+
+    @classmethod
+    def from_mapping(cls, data: Mapping[str, Any]) -> "AccessTokenValue":
+        return cls(
+            access_token=data["access_token"],
+            token_type=data["token_type"],
+            expires_in=data["expires_in"],
+        )
+
+    def asdict(self) -> Dict[str, Any]:
+        return asdict(self)
 
 
 @dataclass
@@ -37,11 +48,7 @@ class AccessToken:
 
         data = response.json()
 
-        return AccessTokenValue(
-            access_token=data["access_token"],
-            token_type=data["token_type"],
-            expires_in=data["expires_in"],
-        )
+        return AccessTokenValue.from_mapping(data)
 
     @property
     def headers(self) -> Dict[str, str]:
