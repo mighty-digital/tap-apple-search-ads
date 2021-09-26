@@ -36,13 +36,12 @@ class AccessToken(access_token.AccessToken):
         self.expiration_time = expiration_time
         self.cache_key = cache_key
 
-    @property
-    def value(self) -> access_token.AccessTokenValue:
+    def value(self, client_secret: str) -> access_token.AccessTokenValue:
         value_ = self.maybe_get()
         if value_:
             return value_
 
-        value_ = self.access_token.value
+        value_ = self.access_token.value(client_secret)
 
         self.put(value_)
 
@@ -96,4 +95,4 @@ class AccessToken(access_token.AccessToken):
         self.cache[self.cache_key] = (expiration_time, value_)
 
     def __repr__(self) -> str:
-        return "CachedAccessToken({})".format(repr(self.access_token))
+        return "Cached({})".format(repr(self.access_token))

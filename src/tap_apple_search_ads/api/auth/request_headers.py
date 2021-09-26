@@ -18,18 +18,16 @@ RequestHeadersValue = TypedDict(
 @dataclass
 class RequestHeaders:
     org_id: str
-    access_token: AccessTokenValue
 
-    @property
-    def value(self) -> RequestHeadersValue:
-        if self.access_token.token_type != "Bearer":
+    def value(self, access_token: AccessTokenValue) -> RequestHeadersValue:
+        if access_token.token_type != "Bearer":
             message = "Unexpected token_type [{}], expected Bearer"
-            logger.error(message, self.access_token.token_type)
-            raise RuntimeError(message.format(self.access_token.token_type))
+            logger.error(message, access_token.token_type)
+            raise RuntimeError(message.format(access_token.token_type))
 
         return {
             "Authorization": "{} {}".format(
-                self.access_token.token_type, self.access_token.access_token
+                access_token.token_type, access_token.access_token
             ),
             "X-AP-Context": "orgId={}".format(self.org_id),
         }

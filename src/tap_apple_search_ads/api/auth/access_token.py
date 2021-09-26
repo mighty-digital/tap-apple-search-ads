@@ -28,11 +28,9 @@ class AccessTokenValue:
 @dataclass
 class AccessToken:
     client_id: str
-    client_secret: str
     url: str = "https://appleid.apple.com/auth/oauth2/token"
 
-    @property
-    def value(self) -> AccessTokenValue:
+    def value(self, client_secret: str) -> AccessTokenValue:
         logger.debug(
             "url: [%s], headers: [%s], params: [%s]",
             self.url,
@@ -43,7 +41,7 @@ class AccessToken:
         response = requests.post(
             self.url,
             headers=self.headers,
-            params=self.params,
+            params=self.params(client_secret),
         )
 
         data = response.json()
@@ -57,11 +55,10 @@ class AccessToken:
             "Content-Type": "application/x-www-form-urlencoded",
         }
 
-    @property
-    def params(self) -> Tuple[Tuple[str, str], ...]:
+    def params(self, client_secret: str) -> Tuple[Tuple[str, str], ...]:
         return (
             ("client_id", self.client_id),
-            ("client_secret", self.client_secret),
+            ("client_secret", client_secret),
             ("grant_type", "client_credentials"),
             ("scope", "searchadsorg"),
         )

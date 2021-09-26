@@ -1,7 +1,7 @@
 from typing import Any, MutableMapping, Optional, Union
 
 import singer
-from tap_apple_search_ads.api.auth import request_headers
+from tap_apple_search_ads.api.auth import request_headers, access_token
 from tap_apple_search_ads.api.auth.cache import utils
 
 logger = singer.get_logger()
@@ -21,13 +21,14 @@ class RequestHeaders(request_headers.RequestHeaders):
         self.expiration_time = expiration_time
         self.cache_key = cache_key
 
-    @property
-    def value(self) -> request_headers.RequestHeadersValue:
+    def value(
+        self, access_token: access_token.AccessTokenValue
+    ) -> request_headers.RequestHeadersValue:
         value_ = self.maybe_get()
         if value_:
             return value_
 
-        value_ = self.request_headers.value
+        value_ = self.request_headers.value(access_token)
 
         self.put(value_)
 
@@ -80,4 +81,4 @@ class RequestHeaders(request_headers.RequestHeaders):
         self.cache[self.cache_key] = (expiration_time, value)
 
     def __repr__(self) -> str:
-        return "CachedRequestHeaders({})".format(repr(self.request_headers))
+        return "Cached({})".format(repr(self.request_headers))

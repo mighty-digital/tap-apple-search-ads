@@ -25,7 +25,6 @@ class Headers:
 class ClientSecret:
     issued_at_timestamp: int
     expiration_time: int
-    private_key: str
     headers: Headers
     payload: Payload
 
@@ -44,8 +43,7 @@ class ClientSecret:
 
         return self.issued_at_timestamp + self.expiration_time
 
-    @property
-    def value(self) -> str:
+    def value(self, private_key: str) -> str:
         jwt_payload = asdict(
             JwtPayload(
                 sub=self.payload.client_id,
@@ -74,7 +72,7 @@ class ClientSecret:
             payload=jwt_payload,
             headers=jwt_headers,
             algorithm=self.headers.algorithm,
-            key=self.private_key,
+            key=private_key,
         )
 
         return client_secret

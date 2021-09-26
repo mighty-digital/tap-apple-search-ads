@@ -17,6 +17,7 @@ class Authentication:
     url: str = "https://appleid.apple.com/auth/oauth2/token"
 
     # caching
+    local_caching: bool = False
     tmp_dir: str = "tmp"
     auth_cache_file: str = "auth"
 
@@ -35,6 +36,8 @@ class Authentication:
         if "url" in context:
             self.url = context["url"]
 
+        if "local_caching" in context:
+            self.local_caching = context["local_caching"]
         if "tmp_dir" in context:
             self.tmp_dir = context["tmp_dir"]
         if "auth_cache_file" in context:
