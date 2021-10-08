@@ -13,7 +13,7 @@ class RequestHeaders(request_headers.RequestHeaders):
         request_headers: request_headers.RequestHeaders,
         cache: MutableMapping[str, Any],
         expiration_time: int = 3600,
-        cache_key: str = "client_secret_value",
+        cache_key: str = "request_headers_value",
     ) -> None:
         self.request_headers = request_headers
         self.cache = cache
