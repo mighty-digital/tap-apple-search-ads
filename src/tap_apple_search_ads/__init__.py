@@ -1,12 +1,14 @@
 import datetime
+import json
 import pathlib
 import shelve
-from typing import Any, List, Mapping, MutableMapping, Optional, Tuple
+import sys
+from typing import Any, Dict, List, Mapping, MutableMapping, Optional, Tuple
 
 import pytz
 import singer
 
-from tap_apple_search_ads import config
+from tap_apple_search_ads import config as tap_config
 from tap_apple_search_ads.api import auth
 from tap_apple_search_ads.api.auth import client_secret
 
@@ -21,16 +23,61 @@ REQUIRED_CONFIG_KEYS: List[str] = [
     "org_id",
 ]
 
+STREAMS = [
+    "campaign",
+]
+
 cache: Optional[shelve.Shelf] = None
 
 
 def main():
     args = singer.utils.parse_args(REQUIRED_CONFIG_KEYS)
 
+    if args.discover:
+        return do_discover()
+
+    if args.catalog:
+        return do_sync(args.config, args.catalog)
+
+
+def do_discover() -> int:
+    result: Dict[str, List[Dict[str, Any]]] = {"streams": []}
+
+    for stream in STREAMS:
+        schema = load_schema(stream)
+        schema = singer.resolve_schema_references(schema)
+
+        result["streams"].append(
+            {
+                "stream": stream,
+                "tap_stream_id": stream,
+                "schema": schema,
+            }
+        )
+
+    json.dump(result, sys.stdout, indent=2)
+
+    return 0
+
+
+def load_schema(stream_name: str) -> Dict[str, Any]:
+    path = (
+        pathlib.Path(__file__).parent / "schemas" / "{}.json".format(stream_name)
+    ).absolute()
+
+    with open(path, "r") as stream:
+        schema = json.load(stream)
+
+    return schema
+
+
+def do_sync(config, catalog):
+    del catalog  # unused
+
     now = datetime.datetime.now(tz=pytz.utc)
     timestamp = int(now.timestamp())
 
-    config_ = config.Authentication(args.config)
+    config_ = tap_config.Authentication(config)
 
     auth_objects = set_up_authentication(timestamp, config_)
 
@@ -38,11 +85,16 @@ def main():
         cache = get_or_create_cache(config_.tmp_dir, config_.auth_cache_file)
         auth_objects = add_caching(*auth_objects, cache=cache)
 
-    private_key = load_private_key(args.config)
+    cs, at, rh = auth_objects
+    private_key = load_private_key(config)
 
-    request_headers_value = authenticate(*request_headers)
+    request_headers_value = rh.value(at.value(cs.value(private_key)))
 
-    return (private_key, *auth_objects)
+    # print(*auth_objects)
+    # print(private_key)
+    print(request_headers_value)
+
+    return 0
 
 
 def load_private_key(config: Mapping[str, str]) -> str:
