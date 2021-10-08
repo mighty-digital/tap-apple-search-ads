@@ -72,7 +72,7 @@
       "enum": ["LOC", "PAYG", ""]
     },
     "servingStateReasons": {
-      "type": "array",
+      "type": ["null", "array"],
       "items": {
         "enum": [
           "AD_GROUP_MISSING",
