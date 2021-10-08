@@ -3,13 +3,14 @@ import json
 import pathlib
 import shelve
 import sys
+import time
 from typing import Any, Dict, List, Mapping, MutableMapping, Optional, Tuple
 
 import pytz
 import singer
 
 from tap_apple_search_ads import config as tap_config
-from tap_apple_search_ads.api import auth
+from tap_apple_search_ads.api import auth, campaign
 from tap_apple_search_ads.api.auth import client_secret
 
 logger = singer.get_logger()
@@ -71,9 +72,7 @@ def load_schema(stream_name: str) -> Dict[str, Any]:
     return schema
 
 
-def do_sync(config, catalog):
-    del catalog  # unused
-
+def do_sync(config: Dict[str, Any], catalog: singer.Catalog):
     now = datetime.datetime.now(tz=pytz.utc)
     timestamp = int(now.timestamp())
 
@@ -90,9 +89,11 @@ def do_sync(config, catalog):
 
     request_headers_value = rh.value(at.value(cs.value(private_key)))
 
-    # print(*auth_objects)
-    # print(private_key)
-    print(request_headers_value)
+    for stream in catalog.streams:
+        stream_name = stream.tap_stream_id
+        sync_stream(stream_name, stream, request_headers_value)
+
+    logger.info("Done syncing.")
 
     return 0
 
@@ -117,7 +118,7 @@ class TapAppleSearchAdsException(Exception):
 
 def set_up_authentication(
     timestamp: int,
-    config_: config.Authentication,
+    config_: tap_config.Authentication,
 ) -> Tuple[auth.ClientSecret, auth.AccessToken, auth.RequestHeaders]:
     headers = client_secret.Headers(config_.key_id, config_.algorithm)
     payload = client_secret.Payload(
@@ -131,7 +132,7 @@ def set_up_authentication(
 
     request_headers = auth.RequestHeaders(config_.org_id)
 
-    return (client_secret_, access_token, request_headers)
+    return client_secret_, access_token, request_headers
 
 
 def get_or_create_cache(cache_dir: str, cache_file: str) -> shelve.Shelf:
@@ -164,3 +165,28 @@ def add_caching(
         auth.cache.AccessToken(access_token, cache),
         auth.cache.RequestHeaders(request_headers, cache),
     )
+
+
+def sync_stream(
+    stream_name: str, stream: singer.CatalogEntry, headers: auth.RequestHeadersValue
+) -> None:
+    start_time = time.monotonic()
+    logger.info("%s: Starting sync", stream_name)
+    singer.write_schema(stream_name, stream.schema.to_dict(), [])
+
+    count = sync_concrete_stream(stream_name, headers)
+
+    end_time = time.monotonic() - start_time
+    logger.info(
+        "%s: Completed sync (%s rows) in %s seconds", stream_name, count, end_time
+    )
+
+
+def sync_concrete_stream(stream_name: str, headers: auth.RequestHeadersValue) -> int:
+    if stream_name == "campaign":
+        campaing_records = campaign.sync(headers)
+        for record in campaing_records:
+            singer.write_record(stream_name, record)
+        return len(campaing_records)
+
+    raise TapAppleSearchAdsException("Unknown stream: [{}]".format(stream_name))
