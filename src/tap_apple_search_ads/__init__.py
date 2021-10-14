@@ -18,8 +18,8 @@ logger = singer.get_logger()
 REQUIRED_CONFIG_KEYS: List[str] = [
     # ClientSecret
     "client_id",
-    "team_id",
     "key_id",
+    "team_id",
     # RequestHeaders
     "org_id",
 ]
@@ -102,9 +102,9 @@ def load_private_key(config: Mapping[str, str]) -> str:
     if "private_key_value" in config:
         private_key = config["private_key_value"]
 
-    elif "private_key_path" in config:
-        private_key_path = config["private_key_path"]
-        private_key = auth.utils.read_private_key_from_file(private_key_path)
+    elif "private_key_file" in config:
+        private_key_file = config["private_key_file"]
+        private_key = auth.utils.read_private_key_from_file(private_key_file)
 
     else:
         raise TapAppleSearchAdsException("Missing private key configuration parameters")
