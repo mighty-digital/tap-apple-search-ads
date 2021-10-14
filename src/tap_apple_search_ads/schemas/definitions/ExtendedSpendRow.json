@@ -1,0 +1,47 @@
+{
+  "type": "object",
+  "properties": {
+    "avgCPA": {
+      "$ref": "Money.json"
+    },
+    "avgCPM": {
+      "$ref": "Money.json"
+    },
+    "avgCPT": {
+      "$ref": "Money.json"
+    },
+    "conversionRate": {
+      "type": "number"
+    },
+    "date": {
+      "type": "string"
+    },
+    "impressions": {
+      "type": "integer"
+    },
+    "installs": {
+      "type": "integer"
+    },
+    "latOffInstals": {
+      "type": "integer"
+    },
+    "latOnInstalls": {
+      "type": "integer"
+    },
+    "localSpend": {
+      "$ref": "Money.json"
+    },
+    "newDownloads": {
+      "type": "integer"
+    },
+    "redownloads": {
+      "type": "integer"
+    },
+    "taps": {
+      "type": "integer"
+    },
+    "ttr": {
+      "type": "number"
+    }
+  }
+}

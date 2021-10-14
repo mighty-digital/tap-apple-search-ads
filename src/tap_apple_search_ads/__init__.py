@@ -8,9 +8,10 @@ from typing import Any, Dict, List, Mapping, MutableMapping, Optional, Tuple
 
 import pytz
 import singer
+from singer import metadata
 
 from tap_apple_search_ads import config as tap_config
-from tap_apple_search_ads.api import auth, campaign
+from tap_apple_search_ads.api import auth, campaign, campaign_level_reports
 from tap_apple_search_ads.api.auth import client_secret
 
 logger = singer.get_logger()
@@ -27,6 +28,7 @@ REQUIRED_CONFIG_KEYS: List[str] = [
 STREAMS = [
     "campaign",
     "campaign_flat",
+    "campaign_level_reports",
 ]
 
 cache: Optional[shelve.Shelf] = None
@@ -48,12 +50,21 @@ def do_discover() -> int:
         schema = load_schema(stream)
         definitions = load_definitions()
         schema = singer.resolve_schema_references(schema, definitions)
+        schema.pop("definitions", None)
 
         result["streams"].append(
             {
                 "stream": stream,
                 "tap_stream_id": stream,
                 "schema": schema,
+                "metadata": [
+                    {
+                        "metadata": {
+                            "selected": False,
+                        },
+                        "breadcrumb": [],
+                    },
+                ],
             }
         )
 
@@ -77,7 +88,7 @@ def load_definitions() -> Dict[str, Dict[str, Any]]:
     schemas_path = pathlib.Path(__file__).parent / "schemas"
     path = schemas_path / "definitions"
 
-    definitions = {}
+    intermediate_definitions = {}
 
     for definition_file in path.iterdir():
         if not definition_file.is_file():
@@ -87,7 +98,16 @@ def load_definitions() -> Dict[str, Dict[str, Any]]:
             schema = json.load(stream)
 
         key = definition_file.relative_to(schemas_path).as_posix()
+        intermediate_definitions[key] = schema
 
+        key = definition_file.name
+        intermediate_definitions[key] = schema
+
+    definitions = {}
+
+    for key, schema in intermediate_definitions.items():
+        schema = singer.resolve_schema_references(schema, intermediate_definitions)
+        schema.pop("definitions", None)
         definitions[key] = schema
 
     return definitions
@@ -190,8 +210,18 @@ def add_caching(
 def sync_stream(
     stream_name: str, stream: singer.CatalogEntry, headers: auth.RequestHeadersValue
 ) -> None:
+    stream_metadata = metadata.to_map(stream.metadata)
+    # metadata.to_map converts metadata to dict of tuples of breadcrumb to actual
+    # metadata objects. Empty tuple means no breadcrumb, means the whole stream
+    stream_selected = stream_metadata.get((), {}).get("selected", False)
+
+    if not stream_selected:
+        logger.info("%s: Skipped sync", stream_name)
+        return
+
     start_time = time.monotonic()
     logger.info("%s: Starting sync", stream_name)
+
     singer.write_schema(stream_name, stream.schema.to_dict(), [])
 
     count = sync_concrete_stream(stream_name, headers)
@@ -217,5 +247,13 @@ def sync_concrete_stream(stream_name: str, headers: auth.RequestHeadersValue) ->
             singer.write_record(stream_name, record)
 
         return len(campaing_records)
+
+    elif stream_name == "campaign_level_reports":
+        reports_records = campaign_level_reports.sync(headers)
+        for record in reports_records:
+            # record = campaign_level_reports.to_schema(record)
+            singer.write_record(stream_name, record)
+
+        return len(reports_records)
 
     raise TapAppleSearchAdsException("Unknown stream: [{}]".format(stream_name))
