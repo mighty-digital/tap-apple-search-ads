@@ -1,7 +1,7 @@
 """Get All Campaigns stream"""
 
 import json
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 import requests
 import singer
@@ -13,15 +13,13 @@ logger = singer.get_logger()
 
 DEFAULT_URL = "https://api.searchads.apple.com/api/v4/campaigns"
 
-
-# might have missed something
-to_serialize = {
-    "locInvoiceDetails",
+PROPERTIES_TO_SERIALIZE = {
     "budgetOrders",
     "countriesOrRegions",
+    "countryOrRegionServingStateReasons",
+    "locInvoiceDetails",
     "servingStateReasons",
     "supplySources",
-    "countryOrRegionServingStateReasons",
 }
 
 
@@ -35,24 +33,27 @@ def sync(headers: RequestHeadersValue) -> List[Dict[str, Any]]:
 
 
 def to_schema(record: Dict[str, Any]) -> Dict[str, Any]:
-    dailyBudgetAmount = record.pop("dailyBudgetAmount")
-
-    record["dailyBudgetAmount.__currency"] = dailyBudgetAmount["currency"]
-    record["dailyBudgetAmount.__amount"] = dailyBudgetAmount["amount"]
-
     budgetAmount = record.pop("budgetAmount")
 
-    record["budgetAmount.__currency"] = budgetAmount["currency"]
-    record["budgetAmount.__amount"] = budgetAmount["amount"]
+    record["budgetAmount_currency"] = budgetAmount["currency"]
+    record["budgetAmount_amount"] = budgetAmount["amount"]
 
-    for v in to_serialize:
-        serialize(record, v)
+    dailyBudgetAmount = record.pop("dailyBudgetAmount")
+
+    record["dailyBudgetAmount_currency"] = dailyBudgetAmount["currency"]
+    record["dailyBudgetAmount_amount"] = dailyBudgetAmount["amount"]
+
+    for key in PROPERTIES_TO_SERIALIZE:
+        value = record.pop(key)
+        record[key] = serialize(value)
 
     return record
 
 
-def serialize(record: Dict[str, Any], w: str):
-    obj = record.pop(w)
-    obj = json.dumps(obj)
+def serialize(value: Any) -> Optional[str]:
+    if value is None:
+        return None
 
-    record[w] = obj
+    value_str = json.dumps(value)
+
+    return value_str
