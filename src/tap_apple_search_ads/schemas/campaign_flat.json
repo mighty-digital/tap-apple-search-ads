@@ -78,7 +78,7 @@
       "type": "integer"
     },
     "locInvoiceDetails": {
-      "type": "string"
+      "type": ["null", "string"]
     },
     "modificationTime": {
       "type": "string",
