@@ -8,6 +8,7 @@ from typing import Any, Dict, List, Mapping, MutableMapping, Optional, Tuple
 
 import pytz
 import singer
+from singer import metadata
 
 from tap_apple_search_ads import config as tap_config
 from tap_apple_search_ads.api import auth, campaign, campaign_level_reports
@@ -56,6 +57,14 @@ def do_discover() -> int:
                 "stream": stream,
                 "tap_stream_id": stream,
                 "schema": schema,
+                "metadata": [
+                    {
+                        "metadata": {
+                            "selected": False,
+                        },
+                        "breadcrumb": [],
+                    },
+                ],
             }
         )
 
@@ -201,8 +210,18 @@ def add_caching(
 def sync_stream(
     stream_name: str, stream: singer.CatalogEntry, headers: auth.RequestHeadersValue
 ) -> None:
+    stream_metadata = metadata.to_map(stream.metadata)
+    # metadata.to_map converts metadata to dict of tuples of breadcrumb to actual
+    # metadata objects. Empty tuple means no breadcrumb, means the whole stream
+    stream_selected = stream_metadata.get((), {}).get("selected", False)
+
+    if not stream_selected:
+        logger.info("%s: Skipped sync", stream_name)
+        return
+
     start_time = time.monotonic()
     logger.info("%s: Starting sync", stream_name)
+
     singer.write_schema(stream_name, stream.schema.to_dict(), [])
 
     count = sync_concrete_stream(stream_name, headers)
