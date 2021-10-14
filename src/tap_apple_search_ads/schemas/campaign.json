@@ -4,8 +4,8 @@
     "adamId",
     "adChannelType",
     "billingEvent",
-    "budgetAmount.__currency",
-    "budgetAmount.__amount",
+    "budgetAmount_currency",
+    "budgetAmount_amount",
     "countriesOrRegions",
     "name",
     "supplySources"
@@ -20,26 +20,22 @@
     "billingEvent": {
       "enum": ["IMPRESSIONS", "TAPS"]
     },
-    "budgetAmount.__currency": {
-      "currency": {
-        "enum": [
-          "AUD",
-          "CAD",
-          "EUR",
-          "GBP",
-          "JPY",
-          "MXN",
-          "NZD",
-          "RMB",
-          "RUB",
-          "USD"
-        ]
-      }
+    "budgetAmount_currency": {
+      "enum": [
+        "AUD",
+        "CAD",
+        "EUR",
+        "GBP",
+        "JPY",
+        "MXN",
+        "NZD",
+        "RMB",
+        "RUB",
+        "USD"
+      ]
     },
-    "budgetAmount.__amount": {
-      "amount": {
-        "type": "string"
-      }
+    "budgetAmount_amount": {
+      "type": "string"
     },
     "budgetOrders": {
       "type": "string"
@@ -48,28 +44,24 @@
       "type": "string"
     },
     "countryOrRegionServingStateReasons": {
-      "$ref": "#/definitions/Campaign.CountryOrRegionServingStateReasons"
+      "type": "string"
     },
-    "dailyBudgetAmount.__currency": {
-      "currency": {
-        "enum": [
-          "AUD",
-          "CAD",
-          "EUR",
-          "GBP",
-          "JPY",
-          "MXN",
-          "NZD",
-          "RMB",
-          "RUB",
-          "USD"
-        ]
-      }
+    "dailyBudgetAmount_currency": {
+      "enum": [
+        "AUD",
+        "CAD",
+        "EUR",
+        "GBP",
+        "JPY",
+        "MXN",
+        "NZD",
+        "RMB",
+        "RUB",
+        "USD"
+      ]
     },
-    "dailyBudgetAmount.__amount": {
-      "amount": {
-        "type": "string"
-      }
+    "dailyBudgetAmount_amount": {
+      "type": "string"
     },
     "deleted": {
       "type": "boolean",
@@ -86,7 +78,7 @@
       "type": "integer"
     },
     "locInvoiceDetails": {
-      "$ref": "#/definitions/LOCInvoiceDetails"
+      "type": "string"
     },
     "modificationTime": {
       "type": "string",
@@ -103,38 +95,7 @@
       "enum": ["LOC", "PAYG", ""]
     },
     "servingStateReasons": {
-      "type": ["null", "string"],
-      "items": {
-        "enum": [
-          "AD_GROUP_MISSING",
-          "APP_NOT_ELIGIBLE",
-          "APP_NOT_ELIGIBLE_SEARCHADS",
-          "APP_NOT_PUBLISHED_YET",
-          "BO_END_DATE_REACHED",
-          "BO_EXHAUSTED",
-          "BO_START_DATE_IN_FUTURE",
-          "CAMPAIGN_END_DATE_REACHED",
-          "CAMPAIGN_START_DATE_IN_FUTURE",
-          "CREDIT_CARD_DECLINED",
-          "DAILY_CAP_EXHAUSTED",
-          "DELETED_BY_USER",
-          "LOC_EXHAUSTED",
-          "MISSING_BO_OR_INVOICING_FIELDS",
-          "NO_ELIGIBLE_COUNTRIES",
-          "NO_PAYMENT_METHOD_ON_FILE",
-          "ORG_CHARGE_BACK_DISPUTED",
-          "ORG_PAYMENT_TYPE_CHANGED",
-          "ORG_SUSPENDED_POLICY_VIOLATION",
-          "ORG_SUSPENDED_FRAUD",
-          "PAUSED_BY_SYSTEM",
-          "PAUSED_BY_USER",
-          "SAPIN_LAW_AGENT_UNKNOWN",
-          "SAPIN_LAW_FRENCH_BIZ_UNKNOWN",
-          "SAPIN_LAW_FRENCH_BIZ",
-          "TAX_VERIFICATION_PENDING",
-          "TOTAL_BUDGET_EXHAUSTED"
-        ]
-      }
+      "type": ["null", "string"]
     },
     "servingStatus": {
       "enum": ["NOT_RUNNING", "RUNNING"]
@@ -148,30 +109,7 @@
       "default": "ENABLED"
     },
     "supplySources": {
-      "type": "string",
-      "items": {
-        "enum": ["APPSTORE_SEARCH_RESULTS", "APPSTORE_SEARCH_TAB"]
-      }
-    }
-  },
-  "definitions": {
-    "Campaign.CountryOrRegionServingStateReasons": {
-      "type": "string",
-      "patternProperties": {
-        ".*": {
-          "enum": [
-            "APP_NOT_ELIGIBLE",
-            "APP_NOT_ELIGIBLE_SEARCHADS",
-            "APP_NOT_PUBLISHED_YET",
-            "SAPIN_LAW_AGENT_UNKNOWN",
-            "SAPIN_LAW_FRENCH_BIZ_UNKNOWN",
-            "SAPIN_LAW_FRENCH_BIZ"
-          ]
-        }
-      }
-    },
-    "LOCInvoiceDetails": {
-      "type": ["null", "string"]
+      "type": "string"
     }
   }
 }
