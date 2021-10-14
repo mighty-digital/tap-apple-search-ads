@@ -33,7 +33,6 @@ cache: Optional[shelve.Shelf] = None
 
 def main():
     args = singer.utils.parse_args(REQUIRED_CONFIG_KEYS)
-
     if args.discover:
         return do_discover()
 
@@ -88,7 +87,7 @@ def do_sync(config: Dict[str, Any], catalog: singer.Catalog):
     private_key = load_private_key(config)
 
     request_headers_value = rh.value(at.value(cs.value(private_key)))
-
+    
     for stream in catalog.streams:
         stream_name = stream.tap_stream_id
         sync_stream(stream_name, stream, request_headers_value)
@@ -131,7 +130,6 @@ def set_up_authentication(
     access_token = auth.AccessToken(config_.client_id, config_.url)
 
     request_headers = auth.RequestHeaders(config_.org_id)
-
     return client_secret_, access_token, request_headers
 
 
@@ -181,12 +179,13 @@ def sync_stream(
         "%s: Completed sync (%s rows) in %s seconds", stream_name, count, end_time
     )
 
-
 def sync_concrete_stream(stream_name: str, headers: auth.RequestHeadersValue) -> int:
     if stream_name == "campaign":
         campaing_records = campaign.sync(headers)
         for record in campaing_records:
+            record = campaign.to_schema(record)
             singer.write_record(stream_name, record)
+
         return len(campaing_records)
 
     raise TapAppleSearchAdsException("Unknown stream: [{}]".format(stream_name))
