@@ -1,0 +1,15 @@
+{
+  "type": "object",
+  "patternProperties": {
+    ".*": {
+      "enum": [
+        "APP_NOT_ELIGIBLE",
+        "APP_NOT_ELIGIBLE_SEARCHADS",
+        "APP_NOT_PUBLISHED_YET",
+        "SAPIN_LAW_AGENT_UNKNOWN",
+        "SAPIN_LAW_FRENCH_BIZ_UNKNOWN",
+        "SAPIN_LAW_FRENCH_BIZ"
+      ]
+    }
+  }
+}

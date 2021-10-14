@@ -26,6 +26,7 @@ REQUIRED_CONFIG_KEYS: List[str] = [
 
 STREAMS = [
     "campaign",
+    "campaign_flat",
 ]
 
 cache: Optional[shelve.Shelf] = None
@@ -45,7 +46,8 @@ def do_discover() -> int:
 
     for stream in STREAMS:
         schema = load_schema(stream)
-        schema = singer.resolve_schema_references(schema)
+        definitions = load_definitions()
+        schema = singer.resolve_schema_references(schema, definitions)
 
         result["streams"].append(
             {
@@ -69,6 +71,26 @@ def load_schema(stream_name: str) -> Dict[str, Any]:
         schema = json.load(stream)
 
     return schema
+
+
+def load_definitions() -> Dict[str, Dict[str, Any]]:
+    schemas_path = pathlib.Path(__file__).parent / "schemas"
+    path = schemas_path / "definitions"
+
+    definitions = {}
+
+    for definition_file in path.iterdir():
+        if not definition_file.is_file():
+            continue
+
+        with open(definition_file, "r") as stream:
+            schema = json.load(stream)
+
+        key = definition_file.relative_to(schemas_path).as_posix()
+
+        definitions[key] = schema
+
+    return definitions
 
 
 def do_sync(config: Dict[str, Any], catalog: singer.Catalog):
@@ -182,6 +204,13 @@ def sync_stream(
 
 def sync_concrete_stream(stream_name: str, headers: auth.RequestHeadersValue) -> int:
     if stream_name == "campaign":
+        campaing_records = campaign.sync(headers)
+        for record in campaing_records:
+            singer.write_record(stream_name, record)
+
+        return len(campaing_records)
+
+    elif stream_name == "campaign_flat":
         campaing_records = campaign.sync(headers)
         for record in campaing_records:
             record = campaign.to_schema(record)

@@ -4,8 +4,7 @@
     "adamId",
     "adChannelType",
     "billingEvent",
-    "budgetAmount_currency",
-    "budgetAmount_amount",
+    "budgetAmount",
     "countriesOrRegions",
     "name",
     "supplySources"
@@ -20,48 +19,26 @@
     "billingEvent": {
       "enum": ["IMPRESSIONS", "TAPS"]
     },
-    "budgetAmount_currency": {
-      "enum": [
-        "AUD",
-        "CAD",
-        "EUR",
-        "GBP",
-        "JPY",
-        "MXN",
-        "NZD",
-        "RMB",
-        "RUB",
-        "USD"
-      ]
-    },
-    "budgetAmount_amount": {
-      "type": "string"
+    "budgetAmount": {
+      "$ref": "definitions/Money.json"
     },
     "budgetOrders": {
-      "type": "string"
+      "type": "array",
+      "items": {
+        "type": "integer"
+      }
     },
     "countriesOrRegions": {
-      "type": "string"
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
     },
     "countryOrRegionServingStateReasons": {
-      "type": "string"
+      "$ref": "definitions/Campaign.CountryOrRegionServingStateReasons.json"
     },
-    "dailyBudgetAmount_currency": {
-      "enum": [
-        "AUD",
-        "CAD",
-        "EUR",
-        "GBP",
-        "JPY",
-        "MXN",
-        "NZD",
-        "RMB",
-        "RUB",
-        "USD"
-      ]
-    },
-    "dailyBudgetAmount_amount": {
-      "type": "string"
+    "dailyBudgetAmount": {
+      "$ref": "definitions/Money.json"
     },
     "deleted": {
       "type": "boolean",
@@ -78,7 +55,7 @@
       "type": "integer"
     },
     "locInvoiceDetails": {
-      "type": "string"
+      "$ref": "definitions/LOCInvoiceDetails.json"
     },
     "modificationTime": {
       "type": "string",
@@ -95,7 +72,38 @@
       "enum": ["LOC", "PAYG", ""]
     },
     "servingStateReasons": {
-      "type": ["null", "string"]
+      "type": ["null", "array"],
+      "items": {
+        "enum": [
+          "AD_GROUP_MISSING",
+          "APP_NOT_ELIGIBLE",
+          "APP_NOT_ELIGIBLE_SEARCHADS",
+          "APP_NOT_PUBLISHED_YET",
+          "BO_END_DATE_REACHED",
+          "BO_EXHAUSTED",
+          "BO_START_DATE_IN_FUTURE",
+          "CAMPAIGN_END_DATE_REACHED",
+          "CAMPAIGN_START_DATE_IN_FUTURE",
+          "CREDIT_CARD_DECLINED",
+          "DAILY_CAP_EXHAUSTED",
+          "DELETED_BY_USER",
+          "LOC_EXHAUSTED",
+          "MISSING_BO_OR_INVOICING_FIELDS",
+          "NO_ELIGIBLE_COUNTRIES",
+          "NO_PAYMENT_METHOD_ON_FILE",
+          "ORG_CHARGE_BACK_DISPUTED",
+          "ORG_PAYMENT_TYPE_CHANGED",
+          "ORG_SUSPENDED_POLICY_VIOLATION",
+          "ORG_SUSPENDED_FRAUD",
+          "PAUSED_BY_SYSTEM",
+          "PAUSED_BY_USER",
+          "SAPIN_LAW_AGENT_UNKNOWN",
+          "SAPIN_LAW_FRENCH_BIZ_UNKNOWN",
+          "SAPIN_LAW_FRENCH_BIZ",
+          "TAX_VERIFICATION_PENDING",
+          "TOTAL_BUDGET_EXHAUSTED"
+        ]
+      }
     },
     "servingStatus": {
       "enum": ["NOT_RUNNING", "RUNNING"]
@@ -109,7 +117,10 @@
       "default": "ENABLED"
     },
     "supplySources": {
-      "type": "string"
+      "type": "array",
+      "items": {
+        "enum": ["APPSTORE_SEARCH_RESULTS", "APPSTORE_SEARCH_TAB"]
+      }
     }
   }
 }

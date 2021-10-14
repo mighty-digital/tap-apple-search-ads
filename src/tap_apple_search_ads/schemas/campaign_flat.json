@@ -1,0 +1,115 @@
+{
+  "type": "object",
+  "required": [
+    "adamId",
+    "adChannelType",
+    "billingEvent",
+    "budgetAmount_currency",
+    "budgetAmount_amount",
+    "countriesOrRegions",
+    "name",
+    "supplySources"
+  ],
+  "properties": {
+    "adamId": {
+      "type": "integer"
+    },
+    "adChannelType": {
+      "enum": ["DISPLAY", "SEARCH"]
+    },
+    "billingEvent": {
+      "enum": ["IMPRESSIONS", "TAPS"]
+    },
+    "budgetAmount_currency": {
+      "enum": [
+        "AUD",
+        "CAD",
+        "EUR",
+        "GBP",
+        "JPY",
+        "MXN",
+        "NZD",
+        "RMB",
+        "RUB",
+        "USD"
+      ]
+    },
+    "budgetAmount_amount": {
+      "type": "string"
+    },
+    "budgetOrders": {
+      "type": "string"
+    },
+    "countriesOrRegions": {
+      "type": "string"
+    },
+    "countryOrRegionServingStateReasons": {
+      "type": "string"
+    },
+    "dailyBudgetAmount_currency": {
+      "enum": [
+        "AUD",
+        "CAD",
+        "EUR",
+        "GBP",
+        "JPY",
+        "MXN",
+        "NZD",
+        "RMB",
+        "RUB",
+        "USD"
+      ]
+    },
+    "dailyBudgetAmount_amount": {
+      "type": "string"
+    },
+    "deleted": {
+      "type": "boolean",
+      "default": false
+    },
+    "displayStatus": {
+      "enum": ["DELETED", "ON_HOLD", "PAUSED", "RUNNING"]
+    },
+    "endTime": {
+      "type": ["null", "string"],
+      "format": "date-time"
+    },
+    "id": {
+      "type": "integer"
+    },
+    "locInvoiceDetails": {
+      "type": "string"
+    },
+    "modificationTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 200
+    },
+    "orgId": {
+      "type": "integer"
+    },
+    "paymentModel": {
+      "enum": ["LOC", "PAYG", ""]
+    },
+    "servingStateReasons": {
+      "type": ["null", "string"]
+    },
+    "servingStatus": {
+      "enum": ["NOT_RUNNING", "RUNNING"]
+    },
+    "startTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "status": {
+      "enum": ["ENABLED", "PAUSED"],
+      "default": "ENABLED"
+    },
+    "supplySources": {
+      "type": "string"
+    }
+  }
+}

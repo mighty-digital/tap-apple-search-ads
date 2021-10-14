@@ -1,0 +1,20 @@
+{
+  "type": ["null", "object"],
+  "properties": {
+    "billingContactEmail": {
+      "type": "string"
+    },
+    "buyerEmail": {
+      "type": "string"
+    },
+    "buyerName": {
+      "type": "string"
+    },
+    "clientName": {
+      "type": "string"
+    },
+    "orderNumber": {
+      "type": "string"
+    }
+  }
+}
