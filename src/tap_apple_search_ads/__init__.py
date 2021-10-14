@@ -49,6 +49,7 @@ def do_discover() -> int:
         schema = load_schema(stream)
         definitions = load_definitions()
         schema = singer.resolve_schema_references(schema, definitions)
+        schema.pop("definitions", None)
 
         result["streams"].append(
             {
@@ -78,7 +79,7 @@ def load_definitions() -> Dict[str, Dict[str, Any]]:
     schemas_path = pathlib.Path(__file__).parent / "schemas"
     path = schemas_path / "definitions"
 
-    definitions = {}
+    intermediate_definitions = {}
 
     for definition_file in path.iterdir():
         if not definition_file.is_file():
@@ -88,7 +89,16 @@ def load_definitions() -> Dict[str, Dict[str, Any]]:
             schema = json.load(stream)
 
         key = definition_file.relative_to(schemas_path).as_posix()
+        intermediate_definitions[key] = schema
 
+        key = definition_file.name
+        intermediate_definitions[key] = schema
+
+    definitions = {}
+
+    for key, schema in intermediate_definitions.items():
+        schema = singer.resolve_schema_references(schema, intermediate_definitions)
+        schema.pop("definitions", None)
         definitions[key] = schema
 
     return definitions
