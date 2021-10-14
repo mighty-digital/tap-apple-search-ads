@@ -1,7 +1,8 @@
 from typing import Any, MutableMapping, Optional, Union
 
 import singer
-from tap_apple_search_ads.api.auth import request_headers, access_token
+
+from tap_apple_search_ads.api.auth import access_token, request_headers
 from tap_apple_search_ads.api.auth.cache import utils
 
 logger = singer.get_logger()

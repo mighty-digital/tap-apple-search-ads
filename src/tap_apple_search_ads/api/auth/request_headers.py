@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import TypedDict
 
 import singer
+
 from tap_apple_search_ads.api.auth.access_token import AccessTokenValue
 
 logger = singer.get_logger()

@@ -1,6 +1,7 @@
 from typing import Any, MutableMapping, Optional, Union
 
 import singer
+
 from tap_apple_search_ads.api.auth import client_secret
 from tap_apple_search_ads.api.auth.cache import utils
 
