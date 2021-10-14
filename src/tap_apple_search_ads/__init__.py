@@ -26,6 +26,7 @@ REQUIRED_CONFIG_KEYS: List[str] = [
 
 STREAMS = [
     "campaign",
+    "campaign_flat",
 ]
 
 cache: Optional[shelve.Shelf] = None
@@ -33,7 +34,6 @@ cache: Optional[shelve.Shelf] = None
 
 def main():
     args = singer.utils.parse_args(REQUIRED_CONFIG_KEYS)
-
     if args.discover:
         return do_discover()
 
@@ -46,7 +46,8 @@ def do_discover() -> int:
 
     for stream in STREAMS:
         schema = load_schema(stream)
-        schema = singer.resolve_schema_references(schema)
+        definitions = load_definitions()
+        schema = singer.resolve_schema_references(schema, definitions)
 
         result["streams"].append(
             {
@@ -70,6 +71,26 @@ def load_schema(stream_name: str) -> Dict[str, Any]:
         schema = json.load(stream)
 
     return schema
+
+
+def load_definitions() -> Dict[str, Dict[str, Any]]:
+    schemas_path = pathlib.Path(__file__).parent / "schemas"
+    path = schemas_path / "definitions"
+
+    definitions = {}
+
+    for definition_file in path.iterdir():
+        if not definition_file.is_file():
+            continue
+
+        with open(definition_file, "r") as stream:
+            schema = json.load(stream)
+
+        key = definition_file.relative_to(schemas_path).as_posix()
+
+        definitions[key] = schema
+
+    return definitions
 
 
 def do_sync(config: Dict[str, Any], catalog: singer.Catalog):
@@ -131,7 +152,6 @@ def set_up_authentication(
     access_token = auth.AccessToken(config_.client_id, config_.url)
 
     request_headers = auth.RequestHeaders(config_.org_id)
-
     return client_secret_, access_token, request_headers
 
 
@@ -187,6 +207,15 @@ def sync_concrete_stream(stream_name: str, headers: auth.RequestHeadersValue) ->
         campaing_records = campaign.sync(headers)
         for record in campaing_records:
             singer.write_record(stream_name, record)
+
+        return len(campaing_records)
+
+    elif stream_name == "campaign_flat":
+        campaing_records = campaign.sync(headers)
+        for record in campaing_records:
+            record = campaign.to_schema(record)
+            singer.write_record(stream_name, record)
+
         return len(campaing_records)
 
     raise TapAppleSearchAdsException("Unknown stream: [{}]".format(stream_name))
