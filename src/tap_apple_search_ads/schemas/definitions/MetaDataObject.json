@@ -1,0 +1,110 @@
+{
+  "type": "object",
+  "properties": {
+    "campaignId": {
+      "type": "integer"
+    },
+    "campaignName": {
+      "type": "string",
+      "maxLength": 200
+    },
+    "deleted": {
+      "type": "boolean",
+      "default": false
+    },
+    "campaignStatus": {
+      "enum": ["ENABLED", "PAUSED"],
+      "default": "ENABLED"
+    },
+    "app": {
+      "$ref": "#/definitions/App"
+    },
+    "servingStatus": {
+      "enum": ["NOT_RUNNING", "RUNNING"]
+    },
+    "servingStateReasons": {
+      "type": ["null", "array"],
+      "items": {
+        "enum": [
+          "AD_GROUP_MISSING",
+          "APP_NOT_ELIGIBLE",
+          "APP_NOT_ELIGIBLE_SEARCHADS",
+          "APP_NOT_PUBLISHED_YET",
+          "BO_END_DATE_REACHED",
+          "BO_EXHAUSTED",
+          "BO_START_DATE_IN_FUTURE",
+          "CAMPAIGN_END_DATE_REACHED",
+          "CAMPAIGN_START_DATE_IN_FUTURE",
+          "CREDIT_CARD_DECLINED",
+          "DAILY_CAP_EXHAUSTED",
+          "DELETED_BY_USER",
+          "LOC_EXHAUSTED",
+          "MISSING_BO_OR_INVOICING_FIELDS",
+          "NO_ELIGIBLE_COUNTRIES",
+          "NO_PAYMENT_METHOD_ON_FILE",
+          "ORG_CHARGE_BACK_DISPUTED",
+          "ORG_PAYMENT_TYPE_CHANGED",
+          "ORG_SUSPENDED_POLICY_VIOLATION",
+          "ORG_SUSPENDED_FRAUD",
+          "PAUSED_BY_SYSTEM",
+          "PAUSED_BY_USER",
+          "SAPIN_LAW_AGENT_UNKNOWN",
+          "SAPIN_LAW_FRENCH_BIZ_UNKNOWN",
+          "SAPIN_LAW_FRENCH_BIZ",
+          "TAX_VERIFICATION_PENDING",
+          "TOTAL_BUDGET_EXHAUSTED"
+        ]
+      }
+    },
+    "countriesOrRegions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "modificationTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "totalBudget": {
+      "$ref": "Money.json"
+    },
+    "dailyBudget": {
+      "$ref": "Money.json"
+    },
+    "displayStatus": {
+      "enum": ["DELETED", "ON_HOLD", "PAUSED", "RUNNING"]
+    },
+    "supplySources": {
+      "type": "array",
+      "items": {
+        "enum": ["APPSTORE_SEARCH_RESULTS", "APPSTORE_SEARCH_TAB"]
+      }
+    },
+    "adChannelType": {
+      "enum": ["DISPLAY", "SEARCH"]
+    },
+    "orgId": {
+      "type": "integer"
+    },
+    "countryOrRegionServingStateReasons": {
+      "$ref": "Campaign.CountryOrRegionServingStateReasons.json"
+    },
+    "billingEvent": {
+      "enum": ["IMPRESSIONS", "TAPS"]
+    }
+  },
+  "definitions": {
+    "App": {
+      "type": "object",
+      "properties": {
+        "appName": {
+          "type": "string"
+        },
+        "adamId": {
+          "type": "integer"
+        }
+      }
+    }
+  }
+}

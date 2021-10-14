@@ -1,145 +1,47 @@
 {
-    "type": "object",
-    "required": [
-        "granularity"
-    ],
-    "properties": {
-        "insights": {
-            "type": "object",
-            "properties": {
-                "bidRecommendation": {
-                    "$ref": "#/definitions/Money"
-                }
-            }
-        },
-        "granularity": {
-            "$ref": "#/definitions/ExtendedSpendRow"
-        },
-       
-        "metadata": {
-            "type": "object"
-        },
-        "other": {
-            "type": "boolean"
-        },
-        "total": {
-            "$ref": "#/definitions/SpendRow"
-        }
+  "type": "object",
+  "properties": {
+    "insights": {
+      "$ref": "#/definitions/InsightsObject"
     },
-    "definitions": {
-        "Money": {
-            "type": "object",
-            "properties": {
-                "currency": {
-                    "enum": [
-                        "AUD",
-                        "CAD",
-                        "EUR",
-                        "GBP",
-                        "JPY",
-                        "MXN",
-                        "NZD",
-                        "RMB",
-                        "RUB",
-                        "USD"
-                    ]
-                },
-                "amount": {
-                    "type": "string"
-                }
-            } 
-        },
-        "SpendRow": {
-            "type": "object",
-            "properties": {
-                "avgCPA": {
-                    "$ref": "#/definitions/Money"
-                },
-                "avgCPM": {
-                    "$ref": "#/definitions/Money"
-                },
-                "avgCPT": {
-                    "$ref": "#/definitions/Money"
-                },
-                "conversionRate": {
-                    "type": "number"
-                },
-                "impressions": {
-                    "type": "integer"
-                },
-                "installs": {
-                    "type": "integer"
-                },
-                "latOffInstals": {
-                    "type": "integer"
-                },
-                "latOnInstalls": {
-                    "type": "integer"
-                }, 
-                "localSpend": {
-                    "$ref": "#/definitions/Money"
-                },
-                "newDownloads": {
-                    "type": "integer"
-                },
-                "redownloads": {
-                    "type": "integer"
-                },
-                "taps": {
-                    "type": "integer"
-                },
-                "ttr": {
-                    "type": "number"
-                }
-            }
-        },
-        "ExtendedSpendRow": {
-            "type": "object",
-            "properties": {
-                "avgCPA": {
-                    "$ref": "#/definitions/Money"
-                },
-                "avgCPM": {
-                    "$ref": "#/definitions/Money"
-                },
-                "avgCPT": {
-                    "$ref": "#/definitions/Money"
-                },
-                "conversionRate": {
-                    "type": "number"
-                },
-                "date": {
-                    "type": "string",
-                    "format": "date-time"
-                },
-                "impressions": {
-                    "type": "integer"
-                },
-                "installs": {
-                    "type": "integer"
-                },
-                "latOffInstals": {
-                    "type": "integer"
-                },
-                "latOnInstalls": {
-                    "type": "integer"
-                }, 
-                "localSpend": {
-                    "$ref": "#/definitions/Money"
-                },
-                "newDownloads": {
-                    "type": "integer"
-                },
-                "redownloads": {
-                    "type": "integer"
-                },
-                "taps": {
-                    "type": "integer"
-                },
-                "ttr": {
-                    "type": "number"
-                }
-            }
-        }
+    "granularity": {
+      "type": "array",
+      "items": {
+        "$ref": "definitions/ExtendedSpendRow.json"
+      }
+    },
+    "metadata": {
+      "$ref": "definitions/MetaDataObject.json"
+    },
+    "other": {
+      "type": "boolean"
+    },
+    "total": {
+      "$ref": "definitions/SpendRow.json"
     }
+  },
+  "definitions": {
+    "InsightsObject": {
+      "$anyOf": [{ "$ref": "#/definitions/KeywordInsights" }]
+    },
+    "KeywordInsights": {
+      "type": "object",
+      "properties": {
+        "bidRecommendation": {
+          "$ref": "#/definitions/KeywordBidRecommendation"
+        }
+      }
+    },
+    "KeywordBidRecommendation": {
+      "type": "object",
+      "properties": {
+        "bidMin": {
+          "$ref": "definitions/Money.json"
+        },
+        "bidMax": {
+          "$ref": "definitions/Money.json"
+        }
+      }
+    }
+  }
 }
