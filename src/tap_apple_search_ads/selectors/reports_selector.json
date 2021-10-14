@@ -1,6 +1,7 @@
 {
   "startTime": "2020-04-08",
   "endTime": "2021-10-15",
+  "granularity": "MONTHLY",
   "selector": {
     "orderBy": [
       {
