@@ -20,7 +20,7 @@
       "enum": ["IMPRESSIONS", "TAPS"]
     },
     "budgetAmount": {
-      "$ref": "#/definitions/Money"
+      "$ref": "definitions/Money.json"
     },
     "budgetOrders": {
       "type": "array",
@@ -35,10 +35,10 @@
       }
     },
     "countryOrRegionServingStateReasons": {
-      "$ref": "#/definitions/Campaign.CountryOrRegionServingStateReasons"
+      "$ref": "definitions/Campaign.CountryOrRegionServingStateReasons.json"
     },
     "dailyBudgetAmount": {
-      "$ref": "#/definitions/Money"
+      "$ref": "definitions/Money.json"
     },
     "deleted": {
       "type": "boolean",
@@ -55,7 +55,7 @@
       "type": "integer"
     },
     "locInvoiceDetails": {
-      "$ref": "#/definitions/LOCInvoiceDetails"
+      "$ref": "definitions/LOCInvoiceDetails.json"
     },
     "modificationTime": {
       "type": "string",
@@ -120,65 +120,6 @@
       "type": "array",
       "items": {
         "enum": ["APPSTORE_SEARCH_RESULTS", "APPSTORE_SEARCH_TAB"]
-      }
-    }
-  },
-  "definitions": {
-    "Money": {
-      "type": "object",
-      "properties": {
-        "currency": {
-          "enum": [
-            "AUD",
-            "CAD",
-            "EUR",
-            "GBP",
-            "JPY",
-            "MXN",
-            "NZD",
-            "RMB",
-            "RUB",
-            "USD"
-          ]
-        },
-        "amount": {
-          "type": "string"
-        }
-      }
-    },
-    "Campaign.CountryOrRegionServingStateReasons": {
-      "type": "object",
-      "patternProperties": {
-        ".*": {
-          "enum": [
-            "APP_NOT_ELIGIBLE",
-            "APP_NOT_ELIGIBLE_SEARCHADS",
-            "APP_NOT_PUBLISHED_YET",
-            "SAPIN_LAW_AGENT_UNKNOWN",
-            "SAPIN_LAW_FRENCH_BIZ_UNKNOWN",
-            "SAPIN_LAW_FRENCH_BIZ"
-          ]
-        }
-      }
-    },
-    "LOCInvoiceDetails": {
-      "type": ["null", "object"],
-      "properties": {
-        "billingContactEmail": {
-          "type": "string"
-        },
-        "buyerEmail": {
-          "type": "string"
-        },
-        "buyerName": {
-          "type": "string"
-        },
-        "clientName": {
-          "type": "string"
-        },
-        "orderNumber": {
-          "type": "string"
-        }
       }
     }
   }

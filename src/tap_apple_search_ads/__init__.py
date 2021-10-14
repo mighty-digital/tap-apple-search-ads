@@ -18,15 +18,16 @@ logger = singer.get_logger()
 REQUIRED_CONFIG_KEYS: List[str] = [
     # ClientSecret
     "client_id",
-    "team_id",
     "key_id",
+    "team_id",
     # RequestHeaders
     "org_id",
 ]
 
 STREAMS = [
     "campaign",
-    "campaign_level_reports"
+    "campaign_flat",
+    "campaign_level_reports",
 ]
 
 cache: Optional[shelve.Shelf] = None
@@ -34,7 +35,6 @@ cache: Optional[shelve.Shelf] = None
 
 def main():
     args = singer.utils.parse_args(REQUIRED_CONFIG_KEYS)
-
     if args.discover:
         return do_discover()
 
@@ -47,7 +47,8 @@ def do_discover() -> int:
 
     for stream in STREAMS:
         schema = load_schema(stream)
-        schema = singer.resolve_schema_references(schema)
+        definitions = load_definitions()
+        schema = singer.resolve_schema_references(schema, definitions)
 
         result["streams"].append(
             {
@@ -71,6 +72,26 @@ def load_schema(stream_name: str) -> Dict[str, Any]:
         schema = json.load(stream)
 
     return schema
+
+
+def load_definitions() -> Dict[str, Dict[str, Any]]:
+    schemas_path = pathlib.Path(__file__).parent / "schemas"
+    path = schemas_path / "definitions"
+
+    definitions = {}
+
+    for definition_file in path.iterdir():
+        if not definition_file.is_file():
+            continue
+
+        with open(definition_file, "r") as stream:
+            schema = json.load(stream)
+
+        key = definition_file.relative_to(schemas_path).as_posix()
+
+        definitions[key] = schema
+
+    return definitions
 
 
 def do_sync(config: Dict[str, Any], catalog: singer.Catalog):
@@ -103,9 +124,9 @@ def load_private_key(config: Mapping[str, str]) -> str:
     if "private_key_value" in config:
         private_key = config["private_key_value"]
 
-    elif "private_key_path" in config:
-        private_key_path = config["private_key_path"]
-        private_key = auth.utils.read_private_key_from_file(private_key_path)
+    elif "private_key_file" in config:
+        private_key_file = config["private_key_file"]
+        private_key = auth.utils.read_private_key_from_file(private_key_file)
 
     else:
         raise TapAppleSearchAdsException("Missing private key configuration parameters")
@@ -132,7 +153,6 @@ def set_up_authentication(
     access_token = auth.AccessToken(config_.client_id, config_.url)
 
     request_headers = auth.RequestHeaders(config_.org_id)
-
     return client_secret_, access_token, request_headers
 
 
@@ -187,6 +207,13 @@ def sync_concrete_stream(stream_name: str, headers: auth.RequestHeadersValue) ->
     if stream_name == "campaign":
         campaing_records = campaign.sync(headers)
         for record in campaing_records:
+            singer.write_record(stream_name, record)
+
+        return len(campaing_records)
+
+    elif stream_name == "campaign_flat":
+        campaing_records = campaign.sync(headers)
+        for record in campaing_records:
             record = campaign.to_schema(record)
             singer.write_record(stream_name, record)
 
@@ -197,7 +224,7 @@ def sync_concrete_stream(stream_name: str, headers: auth.RequestHeadersValue) ->
         for record in reports_records:
             # record = campaign_level_reports.to_schema(record)
             singer.write_record(stream_name, record)
-        
+
         return len(reports_records)
 
     raise TapAppleSearchAdsException("Unknown stream: [{}]".format(stream_name))
