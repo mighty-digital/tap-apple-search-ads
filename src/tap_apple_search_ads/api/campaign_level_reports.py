@@ -40,7 +40,10 @@ def sync(headers: RequestHeadersValue) -> List[Dict[str, Any]]:
     logger.info("Sync: campaign level reports")
     response = requests.post(DEFAULT_URL, headers=headers, json=reportsSelector["data"])
     api.utils.check_response(response)
-    print(response.json()["data"])
+
+    # print will pollute stdout and fail downstream targets
+    logger.debug(response.json()["data"])
+
     return response.json()["data"]["reportingDataResponse"]["row"]
 
 
