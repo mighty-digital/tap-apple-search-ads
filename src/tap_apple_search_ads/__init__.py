@@ -26,6 +26,7 @@ REQUIRED_CONFIG_KEYS: List[str] = [
 
 STREAMS = [
     "campaign",
+    "campaign_level_reports"
 ]
 
 cache: Optional[shelve.Shelf] = None
@@ -186,7 +187,17 @@ def sync_concrete_stream(stream_name: str, headers: auth.RequestHeadersValue) ->
     if stream_name == "campaign":
         campaing_records = campaign.sync(headers)
         for record in campaing_records:
+            record = campaign.to_schema(record)
             singer.write_record(stream_name, record)
+
         return len(campaing_records)
+
+    elif stream_name == "campaign_level_reports":
+        reports_records = campaign_level_reports.sync(headers)
+        for record in reports_records:
+            # record = campaign_level_reports.to_schema(record)
+            singer.write_record(stream_name, record)
+        
+        return len(reports_records)
 
     raise TapAppleSearchAdsException("Unknown stream: [{}]".format(stream_name))
