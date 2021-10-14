@@ -4,7 +4,8 @@
     "adamId",
     "adChannelType",
     "billingEvent",
-    "budgetAmount",
+    "budgetAmount.__currency",
+    "budgetAmount.__amount",
     "countriesOrRegions",
     "name",
     "supplySources"
@@ -19,26 +20,56 @@
     "billingEvent": {
       "enum": ["IMPRESSIONS", "TAPS"]
     },
-    "budgetAmount": {
-      "$ref": "#/definitions/Money"
-    },
-    "budgetOrders": {
-      "type": "array",
-      "items": {
-        "type": "integer"
+    "budgetAmount.__currency": {
+      "currency": {
+        "enum": [
+          "AUD",
+          "CAD",
+          "EUR",
+          "GBP",
+          "JPY",
+          "MXN",
+          "NZD",
+          "RMB",
+          "RUB",
+          "USD"
+        ]
       }
     },
-    "countriesOrRegions": {
-      "type": "array",
-      "items": {
+    "budgetAmount.__amount": {
+      "amount": {
         "type": "string"
       }
+    },
+    "budgetOrders": {
+      "type": "string"
+    },
+    "countriesOrRegions": {
+      "type": "string"
     },
     "countryOrRegionServingStateReasons": {
       "$ref": "#/definitions/Campaign.CountryOrRegionServingStateReasons"
     },
-    "dailyBudgetAmount": {
-      "$ref": "#/definitions/Money"
+    "dailyBudgetAmount.__currency": {
+      "currency": {
+        "enum": [
+          "AUD",
+          "CAD",
+          "EUR",
+          "GBP",
+          "JPY",
+          "MXN",
+          "NZD",
+          "RMB",
+          "RUB",
+          "USD"
+        ]
+      }
+    },
+    "dailyBudgetAmount.__amount": {
+      "amount": {
+        "type": "string"
+      }
     },
     "deleted": {
       "type": "boolean",
@@ -72,7 +103,7 @@
       "enum": ["LOC", "PAYG", ""]
     },
     "servingStateReasons": {
-      "type": ["null", "array"],
+      "type": ["null", "string"],
       "items": {
         "enum": [
           "AD_GROUP_MISSING",
@@ -117,37 +148,15 @@
       "default": "ENABLED"
     },
     "supplySources": {
-      "type": "array",
+      "type": "string",
       "items": {
         "enum": ["APPSTORE_SEARCH_RESULTS", "APPSTORE_SEARCH_TAB"]
       }
     }
   },
   "definitions": {
-    "Money": {
-      "type": "object",
-      "properties": {
-        "currency": {
-          "enum": [
-            "AUD",
-            "CAD",
-            "EUR",
-            "GBP",
-            "JPY",
-            "MXN",
-            "NZD",
-            "RMB",
-            "RUB",
-            "USD"
-          ]
-        },
-        "amount": {
-          "type": "string"
-        }
-      }
-    },
     "Campaign.CountryOrRegionServingStateReasons": {
-      "type": "object",
+      "type": "string",
       "patternProperties": {
         ".*": {
           "enum": [
@@ -162,24 +171,7 @@
       }
     },
     "LOCInvoiceDetails": {
-      "type": ["null", "object"],
-      "properties": {
-        "billingContactEmail": {
-          "type": "string"
-        },
-        "buyerEmail": {
-          "type": "string"
-        },
-        "buyerName": {
-          "type": "string"
-        },
-        "clientName": {
-          "type": "string"
-        },
-        "orderNumber": {
-          "type": "string"
-        }
-      }
+      "type": ["null", "string"]
     }
   }
 }
