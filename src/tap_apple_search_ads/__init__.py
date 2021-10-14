@@ -10,7 +10,7 @@ import pytz
 import singer
 
 from tap_apple_search_ads import config as tap_config
-from tap_apple_search_ads.api import auth, campaign
+from tap_apple_search_ads.api import auth, campaign, campaign_level_reports
 from tap_apple_search_ads.api.auth import client_secret
 
 logger = singer.get_logger()
