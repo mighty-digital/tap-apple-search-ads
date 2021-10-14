@@ -1,9 +1,7 @@
 """Get All Campaigns stream"""
 
-from typing import Any, Dict, List
-
-
 import json
+from typing import Any, Dict, List
 
 import requests
 import singer
@@ -23,8 +21,9 @@ to_serialize = {
     "countriesOrRegions",
     "servingStateReasons",
     "supplySources",
-    "countryOrRegionServingStateReasons"
+    "countryOrRegionServingStateReasons",
 }
+
 
 def sync(headers: RequestHeadersValue) -> List[Dict[str, Any]]:
     logger.info("Sync: campaigns")
@@ -34,15 +33,15 @@ def sync(headers: RequestHeadersValue) -> List[Dict[str, Any]]:
     logger.info("Synced [%s] campaings", len(campaigns))
     return campaigns
 
-def to_schema(record: Dict[str, Any]) -> Dict[str, Any]:
 
+def to_schema(record: Dict[str, Any]) -> Dict[str, Any]:
     dailyBudgetAmount = record.pop("dailyBudgetAmount")
 
     record["dailyBudgetAmount.__currency"] = dailyBudgetAmount["currency"]
     record["dailyBudgetAmount.__amount"] = dailyBudgetAmount["amount"]
 
     budgetAmount = record.pop("budgetAmount")
-    
+
     record["budgetAmount.__currency"] = budgetAmount["currency"]
     record["budgetAmount.__amount"] = budgetAmount["amount"]
 
@@ -57,4 +56,3 @@ def serialize(record: Dict[str, Any], w: str):
     obj = json.dumps(obj)
 
     record[w] = obj
-    

@@ -87,7 +87,7 @@ def do_sync(config: Dict[str, Any], catalog: singer.Catalog):
     private_key = load_private_key(config)
 
     request_headers_value = rh.value(at.value(cs.value(private_key)))
-    
+
     for stream in catalog.streams:
         stream_name = stream.tap_stream_id
         sync_stream(stream_name, stream, request_headers_value)
@@ -178,6 +178,7 @@ def sync_stream(
     logger.info(
         "%s: Completed sync (%s rows) in %s seconds", stream_name, count, end_time
     )
+
 
 def sync_concrete_stream(stream_name: str, headers: auth.RequestHeadersValue) -> int:
     if stream_name == "campaign":
