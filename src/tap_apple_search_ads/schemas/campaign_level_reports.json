@@ -22,7 +22,7 @@
   },
   "definitions": {
     "InsightsObject": {
-      "$anyOf": [{ "$ref": "#/definitions/KeywordInsights" }]
+      "anyOf": [{ "$ref": "#/definitions/KeywordInsights" }]
     },
     "KeywordInsights": {
       "type": "object",
