@@ -191,9 +191,9 @@ $RECYCLE.BIN/
 
 ### Singer ###
 # Tap configuration files
-config.json
-state.json
-catalog.json
+config*.json
+state*.json
+catalog*.json
 
 # Temporary files
 tmp/

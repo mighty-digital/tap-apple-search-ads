@@ -7,8 +7,9 @@ import json
 
 import requests
 import singer
-from tap_apple_search_ads.api.auth import RequestHeadersValue
+
 from tap_apple_search_ads import api
+from tap_apple_search_ads.api.auth import RequestHeadersValue
 
 logger = singer.get_logger()
 
