@@ -19,12 +19,9 @@ reportsSelector = {"loaded": False, "data": {}}
 
 def load_selector(path: str):
 
-    f = open(path, "r")
-
-    reportsSelector["loaded"] = True
-    reportsSelector["data"] = json.load(f)
-
-    f.close()
+    with open(path, "r") as stream:
+        reportsSelector["loaded"] = True
+        reportsSelector["data"] = json.load(stream)
 
 
 def sync(headers: RequestHeadersValue) -> List[Dict[str, Any]]:
