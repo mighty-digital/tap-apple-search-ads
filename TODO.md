@@ -8,3 +8,7 @@ In do_discover generate as many campaign_level_report streams as properties in c
 Reuse the same (non-flat) schema for each of them.
 
 Try doing testing using pytest.
+
+## Implement multi-selector sync
+
+How to bypass if-else limitations if streams are dynamically generated?
