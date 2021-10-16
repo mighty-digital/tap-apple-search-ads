@@ -7,4 +7,4 @@ __all__ = [
     "utils",
 ]
 
-API_DATE_FORMAT = "%Y-%m-%d"
+API_DATE_FORMAT = r"%Y-%m-%d"
