@@ -1,5 +1,13 @@
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Any, Mapping
+
+import pytz
+import singer
+
+from tap_apple_search_ads.api import API_DATE_FORMAT
+
+logger = singer.get_logger()
 
 
 @dataclass
@@ -9,6 +17,10 @@ class Authentication:
     client_id: str
     team_id: str
     org_id: str
+
+    # vars
+    start_time: str
+    end_time: str
 
     # authentication
     algorithm: str = "ES256"
@@ -42,3 +54,14 @@ class Authentication:
             self.tmp_dir = context["tmp_dir"]
         if "auth_cache_file" in context:
             self.auth_cache_file = context["auth_cache_file"]
+
+        # load vars
+        if "start_time" in context:
+            self.start_time = context["start_time"]
+            if not self.start_time:
+                logger.info("start_time value should not be empty")
+
+        if "end_time" in context:
+            self.end_time = context["end_time"]
+            if not self.end_time:
+                self.end_time = datetime.now(tz=pytz.utc).strftime(API_DATE_FORMAT)
