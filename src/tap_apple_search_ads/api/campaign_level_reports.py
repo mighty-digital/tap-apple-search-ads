@@ -2,6 +2,7 @@
 
 import json
 import pathlib
+from datetime import datetime
 from typing import Any, Dict, List
 
 import requests
@@ -25,7 +26,7 @@ def load_selector(path: str):
 
 
 def sync(
-    headers: RequestHeadersValue, additional: Dict[str, str]
+    headers: RequestHeadersValue, start_time: datetime, end_time: datetime
 ) -> List[Dict[str, Any]]:
 
     if not reportsSelector["loaded"]:
@@ -36,31 +37,21 @@ def sync(
         )
         load_selector(path)
 
-    # append missing json keys
-    # reportsSelector["data"].update(
-    #    {"startTime": additional["start_time"], "endTime": additional["end_time"]}
-    # )
+    selector = reportsSelector["data"]
 
-    reportsSelector["data"]["startTime"] = additional["start_time"]
-    reportsSelector["data"]["endTime"] = additional["end_time"]
+    selector["startTime"] = start_time.strftime(api.API_DATE_FORMAT)
+    selector["endTime"] = end_time.strftime(api.API_DATE_FORMAT)
 
-    logger.info("Sync: campaign level reports")
-    response = requests.post(DEFAULT_URL, headers=headers, json=reportsSelector["data"])
+    logger.info(
+        "Sync: campaign level reports with start time [%s] and end time [%s]",
+        start_time,
+        end_time,
+    )
+
+    response = requests.post(DEFAULT_URL, headers=headers, json=selector)
     api.utils.check_response(response)
 
     # print will pollute stdout and fail downstream targets
     logger.debug(response.json()["data"])
 
     return response.json()["data"]["reportingDataResponse"]["row"]
-
-
-# todo
-def to_schema(record: Dict[str, Any]) -> Dict[str, Any]:
-
-    total = record.pop("total")
-    avgCPA = total.pop("avgCPA")
-
-    record["avgCPA.__currency"] = avgCPA["currency"]
-    record["avgCPA.__amount"] = avgCPA["amount"]
-
-    return record

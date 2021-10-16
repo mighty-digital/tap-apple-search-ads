@@ -21,9 +21,6 @@ REQUIRED_CONFIG_KEYS: List[str] = [
     "client_id",
     "key_id",
     "team_id",
-    # For selector
-    "start_time",
-    "end_time",
     # RequestHeaders
     "org_id",
 ]
@@ -219,7 +216,7 @@ def sync_stream(
     stream_name: str,
     stream: singer.CatalogEntry,
     headers: auth.RequestHeadersValue,
-    additional: Dict[str, str],
+    additional: Dict[str, Any],
 ) -> None:
     stream_metadata = metadata.to_map(stream.metadata)
     # metadata.to_map converts metadata to dict of tuples of breadcrumb to actual
@@ -244,7 +241,7 @@ def sync_stream(
 
 
 def sync_concrete_stream(
-    stream_name: str, headers: auth.RequestHeadersValue, additional: Dict[str, str]
+    stream_name: str, headers: auth.RequestHeadersValue, additional: Dict[str, Any]
 ) -> int:
     if stream_name == "campaign":
         campaing_records = campaign.sync(headers)
@@ -262,9 +259,10 @@ def sync_concrete_stream(
         return len(campaing_records)
 
     elif stream_name == "campaign_level_reports":
-        reports_records = campaign_level_reports.sync(headers, additional)
+        reports_records = campaign_level_reports.sync(
+            headers, additional["start_time"], additional["end_time"]
+        )
         for record in reports_records:
-            # record = campaign_level_reports.to_schema(record)
             singer.write_record(stream_name, record)
 
         return len(reports_records)

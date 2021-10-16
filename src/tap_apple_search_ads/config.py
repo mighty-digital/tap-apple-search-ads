@@ -1,13 +1,23 @@
-from dataclasses import dataclass
-from datetime import datetime
+from dataclasses import dataclass, field
+from datetime import datetime, timedelta
 from typing import Any, Mapping
 
 import pytz
 import singer
 
-from tap_apple_search_ads.api import API_DATE_FORMAT
-
 logger = singer.get_logger()
+
+
+def default_start_time() -> datetime:
+    now = datetime.now(tz=pytz.utc)
+    start_time = datetime(now.year, now.month, now.day)
+    return start_time
+
+
+def default_end_time() -> datetime:
+    now = datetime.now(tz=pytz.utc)
+    end_time = datetime(now.year, now.month, now.day) + timedelta(days=1)
+    return end_time
 
 
 @dataclass
@@ -18,9 +28,9 @@ class Authentication:
     team_id: str
     org_id: str
 
-    # vars
-    start_time: str
-    end_time: str
+    # selector parameters
+    start_time: datetime = field(default_factory=default_start_time)
+    end_time: datetime = field(default_factory=default_end_time)
 
     # authentication
     algorithm: str = "ES256"
@@ -55,13 +65,16 @@ class Authentication:
         if "auth_cache_file" in context:
             self.auth_cache_file = context["auth_cache_file"]
 
-        # load vars
         if "start_time" in context:
-            self.start_time = context["start_time"]
-            if not self.start_time:
-                logger.info("start_time value should not be empty")
+            start_time_str = context["start_time"]
+            if start_time_str:
+                self.start_time = datetime.fromisoformat(start_time_str).replace(
+                    tzinfo=pytz.utc
+                )
 
         if "end_time" in context:
-            self.end_time = context["end_time"]
-            if not self.end_time:
-                self.end_time = datetime.now(tz=pytz.utc).strftime(API_DATE_FORMAT)
+            end_time_str = context["end_time"]
+            if end_time_str:
+                self.end_time = datetime.fromisoformat(end_time_str).replace(
+                    tzinfo=pytz.utc
+                )
