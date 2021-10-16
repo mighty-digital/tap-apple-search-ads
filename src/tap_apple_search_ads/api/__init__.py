@@ -6,3 +6,5 @@ __all__ = [
     "auth",
     "utils",
 ]
+
+API_DATE_FORMAT = "%Y-%m-%d"
