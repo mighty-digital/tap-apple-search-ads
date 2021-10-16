@@ -1,5 +1,5 @@
 {
-  "granularity": "MONTHLY",
+  "granularity": "WEEKLY",
   "selector": {
     "orderBy": [
       {
