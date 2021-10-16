@@ -14,7 +14,7 @@ logger = singer.get_logger()
 
 DEFAULT_URL = "https://api.searchads.apple.com/api/v4/reports/campaigns"
 
-reportsSelector = {"loaded": False, "data": {}}
+reportsSelector: Dict[str, Any] = {"loaded": False, "data": Dict[str, Any]}
 
 
 def load_selector(path: str):
@@ -24,7 +24,9 @@ def load_selector(path: str):
         reportsSelector["data"] = json.load(stream)
 
 
-def sync(headers: RequestHeadersValue) -> List[Dict[str, Any]]:
+def sync(
+    headers: RequestHeadersValue, additional: Dict[str, str]
+) -> List[Dict[str, Any]]:
 
     if not reportsSelector["loaded"]:
         path = (
@@ -33,6 +35,14 @@ def sync(headers: RequestHeadersValue) -> List[Dict[str, Any]]:
             .as_posix()
         )
         load_selector(path)
+
+    # append missing json keys
+    # reportsSelector["data"].update(
+    #    {"startTime": additional["start_time"], "endTime": additional["end_time"]}
+    # )
+
+    reportsSelector["data"]["startTime"] = additional["start_time"]
+    reportsSelector["data"]["endTime"] = additional["end_time"]
 
     logger.info("Sync: campaign level reports")
     response = requests.post(DEFAULT_URL, headers=headers, json=reportsSelector["data"])

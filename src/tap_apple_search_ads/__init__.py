@@ -21,6 +21,9 @@ REQUIRED_CONFIG_KEYS: List[str] = [
     "client_id",
     "key_id",
     "team_id",
+    # For selector
+    "start_time",
+    "end_time",
     # RequestHeaders
     "org_id",
 ]
@@ -130,9 +133,14 @@ def do_sync(config: Dict[str, Any], catalog: singer.Catalog):
 
     request_headers_value = rh.value(at.value(cs.value(private_key)))
 
+    additional_params = {
+        "start_time": config_.start_time,
+        "end_time": config_.end_time,
+    }
+
     for stream in catalog.streams:
         stream_name = stream.tap_stream_id
-        sync_stream(stream_name, stream, request_headers_value)
+        sync_stream(stream_name, stream, request_headers_value, additional_params)
 
     logger.info("Done syncing.")
 
@@ -208,7 +216,10 @@ def add_caching(
 
 
 def sync_stream(
-    stream_name: str, stream: singer.CatalogEntry, headers: auth.RequestHeadersValue
+    stream_name: str,
+    stream: singer.CatalogEntry,
+    headers: auth.RequestHeadersValue,
+    additional: Dict[str, str],
 ) -> None:
     stream_metadata = metadata.to_map(stream.metadata)
     # metadata.to_map converts metadata to dict of tuples of breadcrumb to actual
@@ -224,7 +235,7 @@ def sync_stream(
 
     singer.write_schema(stream_name, stream.schema.to_dict(), [])
 
-    count = sync_concrete_stream(stream_name, headers)
+    count = sync_concrete_stream(stream_name, headers, additional)
 
     end_time = time.monotonic() - start_time
     logger.info(
@@ -232,7 +243,9 @@ def sync_stream(
     )
 
 
-def sync_concrete_stream(stream_name: str, headers: auth.RequestHeadersValue) -> int:
+def sync_concrete_stream(
+    stream_name: str, headers: auth.RequestHeadersValue, additional: Dict[str, str]
+) -> int:
     if stream_name == "campaign":
         campaing_records = campaign.sync(headers)
         for record in campaing_records:
@@ -249,7 +262,7 @@ def sync_concrete_stream(stream_name: str, headers: auth.RequestHeadersValue) ->
         return len(campaing_records)
 
     elif stream_name == "campaign_level_reports":
-        reports_records = campaign_level_reports.sync(headers)
+        reports_records = campaign_level_reports.sync(headers, additional)
         for record in reports_records:
             # record = campaign_level_reports.to_schema(record)
             singer.write_record(stream_name, record)
