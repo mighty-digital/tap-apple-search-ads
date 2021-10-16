@@ -117,7 +117,7 @@ def do_sync(config: Dict[str, Any], catalog: singer.Catalog):
     now = datetime.datetime.now(tz=pytz.utc)
     timestamp = int(now.timestamp())
 
-    config_ = tap_config.Authentication(config)
+    config_ = tap_config.Authentication.from_mapping(config)
 
     auth_objects = set_up_authentication(timestamp, config_)
 

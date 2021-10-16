@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Any, Mapping
 
 import pytz
@@ -15,8 +15,7 @@ def default_start_time() -> datetime:
 
 
 def default_end_time() -> datetime:
-    now = datetime.now(tz=pytz.utc)
-    end_time = datetime(now.year, now.month, now.day) + timedelta(days=1)
+    end_time = datetime.now(tz=pytz.utc)
     return end_time
 
 
@@ -27,10 +26,6 @@ class Authentication:
     client_id: str
     team_id: str
     org_id: str
-
-    # selector parameters
-    start_time: datetime = field(default_factory=default_start_time)
-    end_time: datetime = field(default_factory=default_end_time)
 
     # authentication
     algorithm: str = "ES256"
@@ -43,11 +38,18 @@ class Authentication:
     tmp_dir: str = "tmp"
     auth_cache_file: str = "auth"
 
-    def __init__(self, context: Mapping[str, Any]) -> None:
-        self.key_id = context["key_id"]
-        self.client_id = context["client_id"]
-        self.team_id = context["team_id"]
-        self.org_id = context["org_id"]
+    # selector parameters
+    start_time: datetime = field(default_factory=default_start_time)
+    end_time: datetime = field(default_factory=default_end_time)
+
+    @classmethod
+    def from_mapping(cls, context: Mapping[str, Any]) -> "Authentication":
+        self = cls(
+            key_id=context["key_id"],
+            client_id=context["client_id"],
+            team_id=context["team_id"],
+            org_id=context["org_id"],
+        )
 
         if "algorithm" in context:
             self.algorithm = context["algorithm"]
@@ -71,10 +73,11 @@ class Authentication:
                 self.start_time = datetime.fromisoformat(start_time_str).replace(
                     tzinfo=pytz.utc
                 )
-
         if "end_time" in context:
             end_time_str = context["end_time"]
             if end_time_str:
                 self.end_time = datetime.fromisoformat(end_time_str).replace(
                     tzinfo=pytz.utc
                 )
+
+        return self
