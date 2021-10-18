@@ -18,12 +18,14 @@ DEFAULT_URL = "https://api.searchads.apple.com/api/v4/reports/campaigns"
 reportsSelector: Dict[str, Any] = {"loaded": False, "data": Dict[str, Any]}
 
 
-def load_selector() -> Dict[str, Any]:
+def load_selector(selector_name) -> Dict[str, Any]:
     if reportsSelector["loaded"]:
         reportsSelector["data"]
 
     path = (
-        pathlib.Path(__file__).parent.parent / "selectors" / "reports_selector.json"
+        pathlib.Path(__file__).parent.parent
+        / "selectors"
+        / "{}.json".format(selector_name)
     ).absolute()
 
     with open(path, "r") as stream:
@@ -34,9 +36,12 @@ def load_selector() -> Dict[str, Any]:
 
 
 def sync(
-    headers: RequestHeadersValue, start_time: datetime, end_time: datetime
+    headers: RequestHeadersValue,
+    start_time: datetime,
+    end_time: datetime,
+    selector_name: str,
 ) -> List[Dict[str, Any]]:
-    selector = load_selector()
+    selector = load_selector(selector_name)
 
     selector["startTime"] = start_time.strftime(api.API_DATE_FORMAT)
     selector["endTime"] = end_time.strftime(api.API_DATE_FORMAT)
@@ -46,6 +51,11 @@ def sync(
         start_time,
         end_time,
     )
+
+    if selector_name == "reports_selector":
+        logger.info("Sync: using default selector")
+    else:
+        logger("Sync: using {} selector".format(selector_name))
 
     response = requests.post(DEFAULT_URL, headers=headers, json=selector)
     api.utils.check_response(response)
