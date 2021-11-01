@@ -64,3 +64,12 @@ def sync(
     logger.debug(response.json()["data"])
 
     return response.json()["data"]["reportingDataResponse"]["row"]
+
+
+def sync_extended_spend_row(
+    headers: RequestHeadersValue,
+    start_time: datetime,
+    end_time: datetime,
+    selector_name: str,
+) -> List[Dict[str, Any]]:
+    return sync(headers, start_time, end_time, selector_name)

@@ -9,6 +9,8 @@ from typing import Any, Dict, List, Mapping, MutableMapping, Optional, Tuple
 import pytz
 import singer
 from singer import metadata
+from singer.transform import RefResolver
+from singer.transform import _resolve_schema_references as s_rsr
 
 from tap_apple_search_ads import config as tap_config
 from tap_apple_search_ads.api import auth, campaign, campaign_level_reports
@@ -29,6 +31,7 @@ STREAMS = [
     "campaign",
     "campaign_flat",
     "campaign_level_reports",
+    "campaign_level_reports_extended_spend_row",
 ]
 
 cache: Optional[shelve.Shelf] = None
@@ -49,7 +52,7 @@ def do_discover() -> int:
     for stream in STREAMS:
         schema = load_schema(stream)
         definitions = load_definitions()
-        schema = singer.resolve_schema_references(schema, definitions)
+        schema = resolve_schema_references(schema, definitions)
         schema.pop("definitions", None)
 
         result["streams"].append(
@@ -111,6 +114,28 @@ def load_definitions() -> Dict[str, Dict[str, Any]]:
         definitions[key] = schema
 
     return definitions
+
+
+def resolve_schema_references(
+    schema: Dict[str, Any], refs: Optional[Dict[str, Dict[str, Any]]] = None
+) -> Dict[str, Any]:
+    """resolve_schema_references is a re-implementation of the same function from
+    singer.transform. It allows resolution of "allOf" schema element. "allOf" element
+    is missing from provided implementation for reasons unknown.
+    """
+
+    refs = refs or {}
+    return _resolve_schema_references(schema, RefResolver("", schema, store=refs))
+
+
+def _resolve_schema_references(
+    schema: Dict[str, Any], resolver: RefResolver
+) -> Dict[str, Any]:
+    if "allOf" in schema:
+        for i, element in enumerate(schema["allOf"]):
+            schema["allOf"][i] = _resolve_schema_references(element, resolver)
+
+    return s_rsr(schema, resolver)
 
 
 def do_sync(config: Dict[str, Any], catalog: singer.Catalog):
@@ -261,6 +286,18 @@ def sync_concrete_stream(
 
     elif stream_name == "campaign_level_reports":
         reports_records = campaign_level_reports.sync(
+            headers,
+            additional["start_time"],
+            additional["end_time"],
+            additional["selector"],
+        )
+        for record in reports_records:
+            singer.write_record(stream_name, record)
+
+        return len(reports_records)
+
+    elif stream_name == "campaign_level_reports_extended_spend_row":
+        reports_records = campaign_level_reports.sync_extended_spend_row(
             headers,
             additional["start_time"],
             additional["end_time"],
