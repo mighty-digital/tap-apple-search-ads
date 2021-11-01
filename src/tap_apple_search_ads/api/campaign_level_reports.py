@@ -55,7 +55,7 @@ def sync(
     if selector_name == "reports_selector":
         logger.info("Sync: using default selector")
     else:
-        logger("Sync: using {} selector".format(selector_name))
+        logger.info("Sync: using {} selector".format(selector_name))
 
     response = requests.post(DEFAULT_URL, headers=headers, json=selector)
     api.utils.check_response(response)
