@@ -72,4 +72,16 @@ def sync_extended_spend_row(
     end_time: datetime,
     selector_name: str,
 ) -> List[Dict[str, Any]]:
-    return sync(headers, start_time, end_time, selector_name)
+    report_rows = sync(headers, start_time, end_time, selector_name)
+    extended_spend_rows: List[Dict[str, Any]] = []
+
+    for row in report_rows:
+        granularity = row["granularity"]
+        metadata = row["metadata"]
+
+        for granularity_row in granularity:
+            extended_spend_row = dict(granularity_row)
+            extended_spend_row["campaignId"] = metadata["campaignId"]
+            extended_spend_rows.append(extended_spend_row)
+
+    return extended_spend_rows
