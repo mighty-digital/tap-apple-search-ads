@@ -133,6 +133,7 @@ def do_sync(config: Dict[str, Any], catalog: singer.Catalog):
     additional_params = {
         "start_time": config_.start_time,
         "end_time": config_.end_time,
+        "selector": config_.selector,
     }
 
     for stream in catalog.streams:
@@ -260,7 +261,10 @@ def sync_concrete_stream(
 
     elif stream_name == "campaign_level_reports":
         reports_records = campaign_level_reports.sync(
-            headers, additional["start_time"], additional["end_time"]
+            headers,
+            additional["start_time"],
+            additional["end_time"],
+            additional["selector"],
         )
         for record in reports_records:
             singer.write_record(stream_name, record)

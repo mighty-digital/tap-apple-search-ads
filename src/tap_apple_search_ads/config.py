@@ -42,6 +42,11 @@ class Authentication:
     start_time: datetime = field(default_factory=default_start_time)
     end_time: datetime = field(default_factory=default_end_time)
 
+    # selector
+    # this is going to be used later when it comes to loading the actual file
+    # default selector's name is going to be 'reports_selector'
+    selector: str = "reports_selector"
+
     @classmethod
     def from_mapping(cls, context: Mapping[str, Any]) -> "Authentication":
         self = cls(
@@ -79,5 +84,8 @@ class Authentication:
                 self.end_time = datetime.fromisoformat(end_time_str).replace(
                     tzinfo=pytz.utc
                 )
+
+        if "selector" in context:
+            self.selector = context["selector"]
 
         return self
