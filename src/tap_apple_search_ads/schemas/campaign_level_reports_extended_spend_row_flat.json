@@ -1,0 +1,50 @@
+{
+  "type": "object",
+  "properties": {
+    "avgCPA": {
+      "type": "string"
+    },
+    "avgCPM": {
+      "type": "string"
+    },
+    "avgCPT": {
+      "type": "string"
+    },
+    "conversionRate": {
+      "type": "number"
+    },
+    "date": {
+      "type": "string"
+    },
+    "impressions": {
+      "type": "integer"
+    },
+    "installs": {
+      "type": "integer"
+    },
+    "latOffInstals": {
+      "type": "integer"
+    },
+    "latOnInstalls": {
+      "type": "integer"
+    },
+    "localSpend": {
+      "type": "string"
+    },
+    "newDownloads": {
+      "type": "integer"
+    },
+    "redownloads": {
+      "type": "integer"
+    },
+    "taps": {
+      "type": "integer"
+    },
+    "ttr": {
+      "type": "number"
+    },
+    "campaignId": {
+      "type": "integer"
+    }
+  }
+}

@@ -85,3 +85,12 @@ def sync_extended_spend_row(
             extended_spend_rows.append(extended_spend_row)
 
     return extended_spend_rows
+
+
+def flatten(record: Dict[str, Any]) -> Dict[str, Any]:
+    record["avgCPA"] = json.dumps(record["avgCPA"])
+    record["avgCPM"] = json.dumps(record["avgCPM"])
+    record["avgCPT"] = json.dumps(record["avgCPT"])
+    record["localSpend"] = json.dumps(record["localSpend"])
+
+    return record

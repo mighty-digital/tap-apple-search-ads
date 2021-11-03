@@ -32,6 +32,7 @@ STREAMS = [
     "campaign_flat",
     "campaign_level_reports",
     "campaign_level_reports_extended_spend_row",
+    "campaign_level_reports_extended_spend_row_flat",
 ]
 
 cache: Optional[shelve.Shelf] = None
@@ -305,6 +306,18 @@ def sync_concrete_stream(
         )
         for record in reports_records:
             singer.write_record(stream_name, record)
+
+        return len(reports_records)
+
+    elif stream_name == "campaign_level_reports_extended_spend_row_flat":
+        reports_records = campaign_level_reports.sync_extended_spend_row(
+            headers,
+            additional["start_time"],
+            additional["end_time"],
+            additional["selector"],
+        )
+        for record in reports_records:
+            singer.write_record(stream_name, campaign_level_reports.flatten(record))
 
         return len(reports_records)
 
