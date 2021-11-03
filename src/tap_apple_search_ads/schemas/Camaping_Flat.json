@@ -21,18 +21,7 @@
       "enum": ["IMPRESSIONS", "TAPS"]
     },
     "budgetAmount_currency": {
-      "enum": [
-        "AUD",
-        "CAD",
-        "EUR",
-        "GBP",
-        "JPY",
-        "MXN",
-        "NZD",
-        "RMB",
-        "RUB",
-        "USD"
-      ]
+      "$ref": "currency.json"
     },
     "budgetAmount_amount": {
       "type": "string"
@@ -47,18 +36,7 @@
       "type": "string"
     },
     "dailyBudgetAmount_currency": {
-      "enum": [
-        "AUD",
-        "CAD",
-        "EUR",
-        "GBP",
-        "JPY",
-        "MXN",
-        "NZD",
-        "RMB",
-        "RUB",
-        "USD"
-      ]
+      "$ref": "currency.json"
     },
     "dailyBudgetAmount_amount": {
       "type": "string"
