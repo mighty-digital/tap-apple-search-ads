@@ -64,3 +64,33 @@ def sync(
     logger.debug(response.json()["data"])
 
     return response.json()["data"]["reportingDataResponse"]["row"]
+
+
+def sync_extended_spend_row(
+    headers: RequestHeadersValue,
+    start_time: datetime,
+    end_time: datetime,
+    selector_name: str,
+) -> List[Dict[str, Any]]:
+    report_rows = sync(headers, start_time, end_time, selector_name)
+    extended_spend_rows: List[Dict[str, Any]] = []
+
+    for row in report_rows:
+        granularity = row["granularity"]
+        metadata = row["metadata"]
+
+        for granularity_row in granularity:
+            extended_spend_row = dict(granularity_row)
+            extended_spend_row["campaignId"] = metadata["campaignId"]
+            extended_spend_rows.append(extended_spend_row)
+
+    return extended_spend_rows
+
+
+def flatten(record: Dict[str, Any]) -> Dict[str, Any]:
+    record["avgCPA"] = json.dumps(record["avgCPA"])
+    record["avgCPM"] = json.dumps(record["avgCPM"])
+    record["avgCPT"] = json.dumps(record["avgCPT"])
+    record["localSpend"] = json.dumps(record["localSpend"])
+
+    return record

@@ -1,0 +1,12 @@
+{
+  "granularity": "WEEKLY",
+  "selector": {
+    "conditions": [],
+    "fields": [],
+    "orderBy": [{ "field": "campaignId", "sortOrder": "DESCENDING" }],
+    "pagination": { "limit": 1000, "offset": 0 }
+  },
+  "groupBy": [],
+  "timeZone": "UTC",
+  "returnRecordsWithNoMetrics": true
+}
