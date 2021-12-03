@@ -10,3 +10,7 @@ class SchemaCollection(ABC):
     @abstractmethod
     def get_schema_by_name(self, name: str) -> Schema:
         ...
+
+    @abstractmethod
+    def get_schemas(self) -> Dict[str, Schema]:
+        ...

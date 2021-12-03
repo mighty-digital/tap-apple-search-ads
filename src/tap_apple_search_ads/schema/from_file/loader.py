@@ -11,7 +11,7 @@ JSON = [".json"]
 @dataclass
 class Loader(SchemaCollection):
     path: Path = field(init=False)
-    schemas: Dict[str, Schema] = field(init=False, default_factory=dict)
+    _schemas: Dict[str, Schema] = field(init=False, default_factory=dict)
 
     schemas_directory: InitVar[Union[str, Path]]
 
@@ -22,10 +22,17 @@ class Loader(SchemaCollection):
         self.path = schemas_directory
 
     def get_schema_by_name(self, name: str) -> Schema:
-        if not self.schemas:
-            self.schemas = load_json_files(self.path)
-
         return self.schemas[name]
+
+    @property
+    def schemas(self) -> Dict[str, Schema]:
+        if not self._schemas:
+            self._schemas = load_json_files(self.path)
+
+        return self._schemas
+
+    def get_schemas(self) -> Dict[str, Schema]:
+        return self.schemas
 
 
 def load_json_files(directory: Path) -> Dict[str, Schema]:
