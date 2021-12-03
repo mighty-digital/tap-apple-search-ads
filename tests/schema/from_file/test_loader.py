@@ -4,7 +4,7 @@ import pytest
 
 from tap_apple_search_ads.schema.from_file import api
 
-TESTDATA = Path(__file__).absolute() / "testdata"
+TESTDATA = Path(__file__).parent.absolute() / "testdata"
 BASIC = TESTDATA / "basic"
 
 
@@ -22,7 +22,35 @@ def test_loader_init_str():
     assert loader.schemas == {}
 
 
-@pytest.mark.skip(reason="not implemented")
+def test_loader_fails_on_missing_dir():
+    loader = api.Loader(TESTDATA / "missing")
+
+    with pytest.raises(api.LoaderError):
+        loader.get_schema_by_name("a")
+
+
+def test_loader_fails_on_non_dir():
+    loader = api.Loader(BASIC / "a.json")
+
+    with pytest.raises(api.LoaderError):
+        loader.get_schema_by_name("a")
+
+
+def test_loader_schema_import():
+    loader = api.Loader(BASIC)
+
+    loader.get_schema_by_name("a")
+
+    assert loader.schemas
+
+
+def test_loader_fails_on_non_json_dir():
+    loader = api.Loader(TESTDATA / "non-json")
+
+    with pytest.raises(api.LoaderError):
+        loader.get_schema_by_name("a")
+
+
 def test_loader_basic():
     schemas_directory = TESTDATA / "basic"
 
