@@ -49,9 +49,7 @@ def resolve_schema_references(
     return _resolve_schema_references(schema, RefResolver("", schema, store=refs))
 
 
-def _resolve_schema_references(
-    schema: Dict[str, Any], resolver: RefResolver
-) -> Dict[str, Any]:
+def _resolve_schema_references(schema: Schema, resolver: RefResolver) -> Schema:
     if "allOf" in schema:
         for i, element in enumerate(schema["allOf"]):
             schema["allOf"][i] = _resolve_schema_references(element, resolver)
