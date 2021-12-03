@@ -59,4 +59,4 @@ def test_loader_basic():
     expected = {"type": "object"}
     for name in list("abc"):
         schema = loader.get_schema_by_name(name)
-        assert expected == schema
+        assert schema == expected
