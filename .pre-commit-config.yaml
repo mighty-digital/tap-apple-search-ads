@@ -30,6 +30,7 @@ repos:
             additional_dependencies:
               - "types-pytz"
               - "types-requests"
+              - "types-setuptools"
     - repo: https://github.com/PyCQA/flake8
       rev: 4.0.1
       hooks:

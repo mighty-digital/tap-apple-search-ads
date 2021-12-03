@@ -6,15 +6,15 @@ import sys
 import time
 from typing import Any, Dict, List, Mapping, MutableMapping, Optional, Tuple
 
+import pkg_resources
 import pytz
 import singer
 from singer import metadata
-from singer.transform import RefResolver
-from singer.transform import _resolve_schema_references as s_rsr
 
 from tap_apple_search_ads import config as tap_config
 from tap_apple_search_ads.api import auth, campaign, campaign_level_reports
 from tap_apple_search_ads.api.auth import client_secret
+from tap_apple_search_ads.schema.from_file import api as schema
 
 logger = singer.get_logger()
 
@@ -51,16 +51,13 @@ def do_discover() -> int:
     result: Dict[str, List[Dict[str, Any]]] = {"streams": []}
 
     for stream in STREAMS:
-        schema = load_schema(stream)
-        definitions = load_definitions()
-        schema = resolve_schema_references(schema, definitions)
-        schema.pop("definitions", None)
+        stream_schema = load_schema(stream)
 
         result["streams"].append(
             {
                 "stream": stream,
                 "tap_stream_id": stream,
-                "schema": schema,
+                "schema": stream_schema,
                 "metadata": [
                     {
                         "metadata": {
@@ -78,65 +75,15 @@ def do_discover() -> int:
 
 
 def load_schema(stream_name: str) -> Dict[str, Any]:
-    path = (
-        pathlib.Path(__file__).parent / "schemas" / "{}.json".format(stream_name)
-    ).absolute()
+    schemas_directory = pkg_resources.resource_filename(__name__, "schemas")
 
-    with open(path, "r") as stream:
-        schema = json.load(stream)
+    loader = schema.Loader(schemas_directory)
+    resolver = schema.Resolver(loader)
+    facade = schema.Facade(resolver)
 
-    return schema
+    schema_loader = getattr(facade, stream_name)
 
-
-def load_definitions() -> Dict[str, Dict[str, Any]]:
-    schemas_path = pathlib.Path(__file__).parent / "schemas"
-    path = schemas_path / "definitions"
-
-    intermediate_definitions = {}
-
-    for definition_file in path.iterdir():
-        if not definition_file.is_file():
-            continue
-
-        with open(definition_file, "r") as stream:
-            schema = json.load(stream)
-
-        key = definition_file.relative_to(schemas_path).as_posix()
-        intermediate_definitions[key] = schema
-
-        key = definition_file.name
-        intermediate_definitions[key] = schema
-
-    definitions = {}
-
-    for key, schema in intermediate_definitions.items():
-        schema = singer.resolve_schema_references(schema, intermediate_definitions)
-        schema.pop("definitions", None)
-        definitions[key] = schema
-
-    return definitions
-
-
-def resolve_schema_references(
-    schema: Dict[str, Any], refs: Optional[Dict[str, Dict[str, Any]]] = None
-) -> Dict[str, Any]:
-    """resolve_schema_references is a re-implementation of the same function from
-    singer.transform. It allows resolution of "allOf" schema element. "allOf" element
-    is missing from provided implementation for reasons unknown.
-    """
-
-    refs = refs or {}
-    return _resolve_schema_references(schema, RefResolver("", schema, store=refs))
-
-
-def _resolve_schema_references(
-    schema: Dict[str, Any], resolver: RefResolver
-) -> Dict[str, Any]:
-    if "allOf" in schema:
-        for i, element in enumerate(schema["allOf"]):
-            schema["allOf"][i] = _resolve_schema_references(element, resolver)
-
-    return s_rsr(schema, resolver)
+    return schema_loader()
 
 
 def do_sync(config: Dict[str, Any], catalog: singer.Catalog):
