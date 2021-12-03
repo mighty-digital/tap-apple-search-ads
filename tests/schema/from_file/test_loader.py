@@ -26,20 +26,20 @@ def test_loader_fails_on_missing_dir():
     loader = api.Loader(TESTDATA / "missing")
 
     with pytest.raises(api.LoaderError):
-        loader.get_schema_by_name("a")
+        loader.get_schema_by_name("a.json")
 
 
 def test_loader_fails_on_non_dir():
     loader = api.Loader(BASIC / "a.json")
 
     with pytest.raises(api.LoaderError):
-        loader.get_schema_by_name("a")
+        loader.get_schema_by_name("a.json")
 
 
 def test_loader_schema_import():
     loader = api.Loader(BASIC)
 
-    loader.get_schema_by_name("a")
+    loader.get_schema_by_name("a.json")
 
     assert loader.schemas
 
@@ -48,7 +48,7 @@ def test_loader_fails_on_non_json_dir():
     loader = api.Loader(TESTDATA / "non-json")
 
     with pytest.raises(api.LoaderError):
-        loader.get_schema_by_name("a")
+        loader.get_schema_by_name("a.json")
 
 
 def test_loader_basic():
@@ -58,5 +58,5 @@ def test_loader_basic():
 
     expected = {"type": "object"}
     for name in list("abc"):
-        schema = loader.get_schema_by_name(name)
+        schema = loader.get_schema_by_name(name + ".json")
         assert schema == expected

@@ -44,7 +44,7 @@ def load_json_files(directory: Path) -> Dict[str, Schema]:
             continue
 
         with open(file) as stream:
-            json_files[file.stem] = json.load(stream)
+            json_files[file.name] = json.load(stream)
 
     if not json_files:
         raise LoaderError("directory {} does not contain any JSON files")
