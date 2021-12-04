@@ -1,9 +1,10 @@
 """Concrete Stream instances - provide actual data sync."""
 
 from dataclasses import dataclass, field
-from typing import Optional
+from typing import Iterable, Optional
 
 from tap_apple_search_ads.schema import Schema
+from tap_apple_search_ads.stream import Record
 from tap_apple_search_ads.stream.api import Descriptor, Metadata, Stream
 
 
@@ -28,6 +29,9 @@ class ConcreteStreamBase(Stream):
         """
 
         self._descriptor = descriptor
+
+    def sync(self) -> Iterable[Record]:
+        return super().sync()
 
 
 def default_descriptor(stream: ConcreteStreamBase) -> Descriptor:
