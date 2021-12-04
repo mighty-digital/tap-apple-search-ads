@@ -1,6 +1,6 @@
 from tap_apple_search_ads.schema import Schema
+from tap_apple_search_ads.stream import concrete as streams
 from tap_apple_search_ads.stream.api import Descriptor, Metadata
-from tap_apple_search_ads.stream.concrete import api
 
 
 class ClrProvider:
@@ -9,7 +9,7 @@ class ClrProvider:
 
 
 def test_campaign_level_reports_descriptor():
-    stream = api.CampaignLevelReports.from_schema_provider(ClrProvider())
+    stream = streams.CampaignLevelReports.from_schema_provider(ClrProvider())
 
     expected = Descriptor(
         "campaign_level_reports",
@@ -27,7 +27,7 @@ class EsrProvider:
 
 
 def test_campaign_level_reports_esr_descriptor():
-    stream = api.ExtendedSpendRow.from_schema_provider(EsrProvider())
+    stream = streams.ExtendedSpendRow.from_schema_provider(EsrProvider())
 
     expected = Descriptor(
         "campaign_level_reports_extended_spend_row",
@@ -45,7 +45,7 @@ class EsrFlatProvider:
 
 
 def test_campaign_level_reports_esr_flat_descriptor():
-    stream = api.ExtendedSpendRowFlat.from_schema_provider(EsrFlatProvider())
+    stream = streams.ExtendedSpendRowFlat.from_schema_provider(EsrFlatProvider())
 
     expected = Descriptor(
         "campaign_level_reports_extended_spend_row_flat",

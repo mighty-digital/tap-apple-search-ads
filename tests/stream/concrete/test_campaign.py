@@ -1,6 +1,6 @@
 from tap_apple_search_ads.schema import Schema
+from tap_apple_search_ads.stream import concrete as streams
 from tap_apple_search_ads.stream.api import Descriptor, Metadata
-from tap_apple_search_ads.stream.concrete import api
 
 
 class CampaignProvider:
@@ -9,7 +9,7 @@ class CampaignProvider:
 
 
 def test_campaign_descriptor():
-    stream = api.Campaign.from_schema_provider(CampaignProvider())
+    stream = streams.Campaign.from_schema_provider(CampaignProvider())
 
     expected = Descriptor(
         "campaign",
@@ -27,7 +27,7 @@ class CampaignFlatProvider:
 
 
 def test_campaign_flat_descriptor():
-    stream = api.CampaignFlat.from_schema_provider(CampaignFlatProvider())
+    stream = streams.CampaignFlat.from_schema_provider(CampaignFlatProvider())
 
     expected = Descriptor(
         "campaign_flat",

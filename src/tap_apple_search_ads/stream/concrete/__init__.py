@@ -1,21 +1,5 @@
-"""Concrete Stream instances - provide actual data sync."""
-
-from dataclasses import dataclass
-
-from tap_apple_search_ads.schema import Schema
-from tap_apple_search_ads.stream.api import Descriptor, Metadata, Stream
-
-
-@dataclass
-class ConcreteStreamBase(Stream):
-    stream: str
-    tap_stream_id: str
-    schema: Schema
-
-    def descriptor(self) -> Descriptor:
-        return Descriptor(
-            stream=self.stream,
-            tap_stream_id=self.tap_stream_id,
-            schema=self.schema,
-            metadata=[Metadata.disabled()],
-        )
+from .campaign import Campaign as Campaign  # noqa
+from .campaign import CampaignFlat as CampaignFlat  # noqa
+from .campaign_level_reports import CampaignLevelReports as CampaignLevelReports  # noqa
+from .campaign_level_reports import ExtendedSpendRow as ExtendedSpendRow  # noqa
+from .campaign_level_reports import ExtendedSpendRowFlat as ExtendedSpendRowFlat  # noqa

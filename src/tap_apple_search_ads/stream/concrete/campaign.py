@@ -3,7 +3,7 @@ from typing import Protocol
 
 from tap_apple_search_ads.schema import Schema
 
-from . import ConcreteStreamBase
+from .core import ConcreteStreamBase
 
 CAMPAIGN = "campaign"
 CAMPAIGN_FLAT = "campaign_flat"
