@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 from tap_apple_search_ads.schema import Schema
 
@@ -19,3 +19,11 @@ class Descriptor:
             tap_stream_id = stream
 
         return cls(stream, tap_stream_id, schema, [Metadata.disabled()])
+
+    def dict(self) -> Dict[str, Any]:
+        return {
+            "stream": self.stream,
+            "tap_stream_id": self.tap_stream_id,
+            "schema": self.schema,
+            "metadata": [metadata.dict() for metadata in self.metadata],
+        }
