@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 
-from . import Schema, SchemaCollection
+from tap_apple_search_ads.schema import Schema
+
+from . import SchemaCollection
 
 
 @dataclass

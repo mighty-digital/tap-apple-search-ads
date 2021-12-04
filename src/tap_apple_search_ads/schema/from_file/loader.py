@@ -3,7 +3,9 @@ from dataclasses import InitVar, dataclass, field
 from pathlib import Path
 from typing import Dict, Union
 
-from . import Schema, SchemaCollection
+from tap_apple_search_ads.schema import Schema
+
+from . import SchemaCollection
 
 JSON = [".json"]
 

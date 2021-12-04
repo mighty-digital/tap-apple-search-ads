@@ -1,9 +1,9 @@
 """Loading Schema from JSON files."""
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict
+from typing import Dict
 
-Schema = Dict[str, Any]
+from tap_apple_search_ads.schema import Schema
 
 
 class SchemaCollection(ABC):

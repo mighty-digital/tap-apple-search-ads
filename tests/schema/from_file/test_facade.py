@@ -2,9 +2,8 @@ from dataclasses import dataclass
 from typing import Dict
 from unittest import mock
 
-from tap_apple_search_ads.schema import from_file
+from tap_apple_search_ads.schema import Schema, from_file
 from tap_apple_search_ads.schema.from_file import api
-from tap_apple_search_ads.schema.from_file.api import Schema
 
 
 @dataclass

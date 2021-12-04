@@ -6,7 +6,9 @@ from singer.transform import (
     _resolve_schema_references as singer_resolve_schema_references,
 )
 
-from . import Schema, SchemaCollection
+from tap_apple_search_ads.schema import Schema
+
+from . import SchemaCollection
 
 DEFS = "$defs"
 
