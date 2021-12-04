@@ -15,6 +15,8 @@ from tap_apple_search_ads import config as tap_config
 from tap_apple_search_ads.api import auth, campaign, campaign_level_reports
 from tap_apple_search_ads.api.auth import client_secret
 from tap_apple_search_ads.schema.from_file import api as schema
+from tap_apple_search_ads.stream.api import Stream
+from tap_apple_search_ads.stream.concrete import api as streams
 
 logger = singer.get_logger()
 
@@ -48,42 +50,36 @@ def main():
 
 
 def do_discover() -> int:
-    result: Dict[str, List[Dict[str, Any]]] = {"streams": []}
+    schema_loader = create_schema_loader()
+    streams = create_default_streams(schema_loader)
+    descriptors = [stream.descriptor() for stream in streams]
+    descriptors_dict = [descriptor.dict() for descriptor in descriptors]
 
-    for stream in STREAMS:
-        stream_schema = load_schema(stream)
-
-        result["streams"].append(
-            {
-                "stream": stream,
-                "tap_stream_id": stream,
-                "schema": stream_schema,
-                "metadata": [
-                    {
-                        "metadata": {
-                            "selected": False,
-                        },
-                        "breadcrumb": [],
-                    },
-                ],
-            }
-        )
+    result = {"streams": descriptors_dict}
 
     json.dump(result, sys.stdout, indent=2)
 
     return 0
 
 
-def load_schema(stream_name: str) -> Dict[str, Any]:
+def create_schema_loader() -> schema.Facade:
     schemas_directory = pkg_resources.resource_filename(__name__, "schemas")
 
     loader = schema.Loader(schemas_directory)
     resolver = schema.Resolver(loader)
     facade = schema.Facade(resolver)
 
-    schema_loader = getattr(facade, stream_name)
+    return facade
 
-    return schema_loader()
+
+def create_default_streams(schema_provider: schema.Facade) -> List[Stream]:
+    return [
+        streams.Campaign.from_schema_provider(schema_provider),
+        streams.CampaignFlat.from_schema_provider(schema_provider),
+        streams.CampaignLevelReports.from_schema_provider(schema_provider),
+        streams.ExtendedSpendRow.from_schema_provider(schema_provider),
+        streams.ExtendedSpendRowFlat.from_schema_provider(schema_provider),
+    ]
 
 
 def do_sync(config: Dict[str, Any], catalog: singer.Catalog):
