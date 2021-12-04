@@ -1,14 +1,23 @@
 {
   "type": "object",
   "properties": {
-    "avgCPA": {
-      "$ref": "Money.json"
+    "avgCPA_currency": {
+      "$ref": "currency.json"
     },
-    "avgCPM": {
-      "$ref": "Money.json"
+    "avgCPA_amount": {
+      "type": "string"
     },
-    "avgCPT": {
-      "$ref": "Money.json"
+    "avgCPM_currency": {
+      "$ref": "currency.json"
+    },
+    "avgCPM_amount": {
+      "type": "string"
+    },
+    "avgCPT_currency": {
+      "$ref": "currency.json"
+    },
+    "avgCPT_amount": {
+      "type": "string"
     },
     "conversionRate": {
       "type": "number"
@@ -28,8 +37,11 @@
     "latOnInstalls": {
       "type": "integer"
     },
-    "localSpend": {
-      "$ref": "Money.json"
+    "localSpend_currency": {
+      "$ref": "currency.json"
+    },
+    "localSpend_amount": {
+      "type": "string"
     },
     "newDownloads": {
       "type": "integer"
@@ -42,6 +54,9 @@
     },
     "ttr": {
       "type": "number"
+    },
+    "campaignId": {
+      "type": "integer"
     }
   }
 }

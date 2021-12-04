@@ -1,4 +1,5 @@
 {
+  "$id": "https://developer.apple.com/documentation/apple_search_ads/campaign",
   "type": "object",
   "required": [
     "adamId",
@@ -20,7 +21,7 @@
       "enum": ["IMPRESSIONS", "TAPS"]
     },
     "budgetAmount": {
-      "$ref": "definitions/Money.json"
+      "$ref": "Money.json"
     },
     "budgetOrders": {
       "type": "array",
@@ -35,10 +36,10 @@
       }
     },
     "countryOrRegionServingStateReasons": {
-      "$ref": "definitions/Campaign.CountryOrRegionServingStateReasons.json"
+      "$ref": "Campaign.CountryOrRegionServingStateReasons.json"
     },
     "dailyBudgetAmount": {
-      "$ref": "definitions/Money.json"
+      "$ref": "Money.json"
     },
     "deleted": {
       "type": "boolean",
@@ -55,7 +56,7 @@
       "type": "integer"
     },
     "locInvoiceDetails": {
-      "$ref": "definitions/LOCInvoiceDetails.json"
+      "$ref": "#/$defs/LOCInvoiceDetails"
     },
     "modificationTime": {
       "type": "string",
@@ -120,6 +121,28 @@
       "type": "array",
       "items": {
         "enum": ["APPSTORE_SEARCH_RESULTS", "APPSTORE_SEARCH_TAB"]
+      }
+    }
+  },
+  "$defs": {
+    "LOCInvoiceDetails": {
+      "type": ["null", "object"],
+      "properties": {
+        "billingContactEmail": {
+          "type": "string"
+        },
+        "buyerEmail": {
+          "type": "string"
+        },
+        "buyerName": {
+          "type": "string"
+        },
+        "clientName": {
+          "type": "string"
+        },
+        "orderNumber": {
+          "type": "string"
+        }
       }
     }
   }
