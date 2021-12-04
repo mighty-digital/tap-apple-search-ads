@@ -4,15 +4,15 @@ from tap_apple_search_ads.stream.concrete import api
 
 
 class MockProvider:
-    def campaign(self) -> Schema:
+    def campaign_flat(self) -> Schema:
         return {"type": "object"}
 
 
 def test_init_default():
-    stream = api.Campaign.from_schema_provider(MockProvider())
+    stream = api.CampaignFlat.from_schema_provider(MockProvider())
 
     expected = Descriptor(
-        "campaign", "campaign", {"type": "object"}, [Metadata.disabled()]
+        "campaign_flat", "campaign_flat", {"type": "object"}, [Metadata.disabled()]
     )
 
     assert stream.descriptor == expected
