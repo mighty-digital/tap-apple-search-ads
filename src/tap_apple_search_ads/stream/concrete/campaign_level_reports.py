@@ -3,7 +3,7 @@ from typing import Protocol
 
 from tap_apple_search_ads.schema import Schema
 
-from .core import ConcreteStreamBase
+from .base import ConcreteStreamBase
 
 CAMPAIGN_LEVEL_REPORTS = "campaign_level_reports"
 CAMPAIGN_LEVEL_REPORTS_ESR = "campaign_level_reports_extended_spend_row"
