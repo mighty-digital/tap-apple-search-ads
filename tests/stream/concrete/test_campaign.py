@@ -3,16 +3,37 @@ from tap_apple_search_ads.stream.api import Descriptor, Metadata
 from tap_apple_search_ads.stream.concrete import api
 
 
-class MockProvider:
+class CampaignProvider:
     def campaign(self) -> Schema:
-        return {"type": "object"}
+        return {"$id": "campaign", "type": "object"}
 
 
-def test_init_default():
-    stream = api.Campaign.from_schema_provider(MockProvider())
+def test_campaign_descriptor():
+    stream = api.Campaign.from_schema_provider(CampaignProvider())
 
     expected = Descriptor(
-        "campaign", "campaign", {"type": "object"}, [Metadata.disabled()]
+        "campaign",
+        "campaign",
+        {"$id": "campaign", "type": "object"},
+        [Metadata.disabled()],
+    )
+
+    assert stream.descriptor() == expected
+
+
+class CampaignFlatProvider:
+    def campaign_flat(self) -> Schema:
+        return {"$id": "campaign_flat", "type": "object"}
+
+
+def test_campaign_flat_descriptor():
+    stream = api.CampaignFlat.from_schema_provider(CampaignFlatProvider())
+
+    expected = Descriptor(
+        "campaign_flat",
+        "campaign_flat",
+        {"$id": "campaign_flat", "type": "object"},
+        [Metadata.disabled()],
     )
 
     assert stream.descriptor() == expected
