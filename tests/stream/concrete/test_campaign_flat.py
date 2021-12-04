@@ -15,4 +15,4 @@ def test_init_default():
         "campaign_flat", "campaign_flat", {"type": "object"}, [Metadata.disabled()]
     )
 
-    assert stream.descriptor == expected
+    assert stream.descriptor() == expected

@@ -2,7 +2,8 @@ from dataclasses import dataclass
 from typing import Protocol
 
 from tap_apple_search_ads.schema import Schema
-from tap_apple_search_ads.stream.api import Descriptor, Metadata, Stream
+
+from . import ConcreteStreamBase
 
 CAMPAIGN = "campaign"
 
@@ -13,18 +14,7 @@ class SchemaProvider(Protocol):
 
 
 @dataclass
-class Campaign(Stream):
-    schema: Schema
-
+class Campaign(ConcreteStreamBase):
     @classmethod
     def from_schema_provider(cls, provider: SchemaProvider):
-        return cls(schema=provider.campaign())
-
-    @property
-    def descriptor(self) -> Descriptor:
-        return Descriptor(
-            stream=CAMPAIGN,
-            tap_stream_id=CAMPAIGN,
-            schema=self.schema,
-            metadata=[Metadata.disabled()],
-        )
+        return cls(stream=CAMPAIGN, tap_stream_id=CAMPAIGN, schema=provider.campaign())
