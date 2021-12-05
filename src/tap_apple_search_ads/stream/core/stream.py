@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Iterable
 
-from . import Record
+from .base import Record
 from .descriptor import Descriptor
 
 

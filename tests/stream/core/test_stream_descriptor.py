@@ -1,8 +1,8 @@
-from tap_apple_search_ads.stream import api
+from tap_apple_search_ads.stream import core as stream
 
 
 def test_descriptor_disabled():
-    descriptor = api.Descriptor.disabled(
+    descriptor = stream.Descriptor.disabled(
         stream="test",
         schema={"type": "object"},
     )
@@ -11,11 +11,11 @@ def test_descriptor_disabled():
     assert descriptor.tap_stream_id == "test"
     assert descriptor.schema == {"type": "object"}
     assert len(descriptor.metadata) == 1
-    assert descriptor.metadata[0] == api.Metadata.disabled()
+    assert descriptor.metadata[0] == stream.Metadata.disabled()
 
 
 def test_descriptor_disabled_dict():
-    descriptor = api.Descriptor.disabled(
+    descriptor = stream.Descriptor.disabled(
         stream="test",
         schema={"type": "object"},
     )

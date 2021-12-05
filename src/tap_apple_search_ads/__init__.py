@@ -16,7 +16,7 @@ from tap_apple_search_ads.api import auth, campaign, campaign_level_reports
 from tap_apple_search_ads.api.auth import client_secret
 from tap_apple_search_ads.schema.from_file import api as schema
 from tap_apple_search_ads.stream import concrete as streams
-from tap_apple_search_ads.stream.api import Descriptor, Stream
+from tap_apple_search_ads.stream.core import Descriptor, Stream
 
 logger = singer.get_logger()
 

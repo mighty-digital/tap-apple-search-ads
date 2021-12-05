@@ -1,5 +1,5 @@
-from tap_apple_search_ads.stream.api import Descriptor, Metadata
 from tap_apple_search_ads.stream.concrete.base import ConcreteStreamBase
+from tap_apple_search_ads.stream.core import Descriptor, Metadata
 
 
 def test_set_descriptor():

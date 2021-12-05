@@ -1,5 +1,5 @@
 import tap_apple_search_ads as tap
-from tap_apple_search_ads.stream.api import Descriptor
+from tap_apple_search_ads.stream.core import Descriptor
 
 
 def test_add_selector_name():

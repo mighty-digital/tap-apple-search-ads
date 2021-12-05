@@ -4,8 +4,8 @@ from typing import Any
 
 from tap_apple_search_ads.schema import Schema
 from tap_apple_search_ads.stream import concrete as streams
-from tap_apple_search_ads.stream.api import Descriptor, Metadata
 from tap_apple_search_ads.stream.concrete.campaign import GetAllCampaignsResponse
+from tap_apple_search_ads.stream.core import Descriptor, Metadata
 
 TESTDATA = Path(__file__).absolute().parent / "testdata"
 

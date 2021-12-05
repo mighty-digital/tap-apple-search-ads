@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, Iterable, List, Optional, Protocol, TypedDict
 
 from tap_apple_search_ads.schema import Schema
-from tap_apple_search_ads.stream import Record, StreamError
+from tap_apple_search_ads.stream.core import Record, StreamError
 
 from .base import ConcreteStreamBase
 
