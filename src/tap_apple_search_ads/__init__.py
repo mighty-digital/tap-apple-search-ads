@@ -86,6 +86,16 @@ def create_default_streams(schema_provider: schema.Facade) -> List[Stream]:
     ]
 
 
+def create_default_descriptors(factory: streams.DescriptorFactory) -> List[Descriptor]:
+    return [
+        factory.campaign(),
+        factory.campaign_flat(),
+        factory.campaign_level_reports(),
+        factory.campaign_level_reports_extended_spend_row(),
+        factory.campaign_level_reports_extended_spend_row_flat(),
+    ]
+
+
 def create_dynamic_streams(
     config: Dict[str, Any], schema_provider: schema.Facade
 ) -> List[Stream]:
@@ -126,6 +136,47 @@ def create_clr_streams(
         clr_streams[descriptor.tap_stream_id] = stream
 
     return clr_streams
+
+
+def create_dynamic_descriptors(
+    config: Dict[str, Any], factory: streams.DescriptorFactory
+) -> List[Descriptor]:
+    dynamic_descriptors: List[Descriptor] = []
+
+    if "selectors" in config:
+        selectors: Dict[str, Dict[str, Any]] = config["selectors"]
+        selector_descriptors = create_selector_descriptors(selectors, factory)
+        dynamic_descriptors.extend(selector_descriptors)
+
+    return dynamic_descriptors
+
+
+def create_selector_descriptors(
+    selectors: Dict[str, Dict[str, Any]], factory: streams.DescriptorFactory
+) -> List[Descriptor]:
+    selector_descriptors: List[Descriptor] = []
+
+    for name in selectors:
+        clr_descriptors = create_clr_descriptors(name, factory)
+        selector_descriptors.extend(clr_descriptors.values())
+
+    return selector_descriptors
+
+
+def create_clr_descriptors(
+    selector_name: str, factory: streams.DescriptorFactory
+) -> Dict[str, Descriptor]:
+    clr_descriptors: Dict[str, Descriptor] = {}
+
+    for descriptor in [
+        factory.campaign_level_reports(),
+        factory.campaign_level_reports_extended_spend_row(),
+        factory.campaign_level_reports_extended_spend_row_flat(),
+    ]:
+        descriptor = add_selector_name(descriptor, selector_name)
+        clr_descriptors[descriptor.tap_stream_id] = descriptor
+
+    return clr_descriptors
 
 
 def add_selector_name(descriptor: Descriptor, name: str) -> Descriptor:

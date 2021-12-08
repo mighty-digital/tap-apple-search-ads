@@ -1,7 +1,7 @@
 from unittest.mock import sentinel
 
 from tap_apple_search_ads.schema import Schema
-from tap_apple_search_ads.stream import concrete as stream
+from tap_apple_search_ads.stream import concrete as streams
 from tap_apple_search_ads.stream.core import Descriptor, Metadata
 
 
@@ -35,7 +35,7 @@ class SchemaProvider:
 
 
 def test_campaign():
-    factory = stream.DescriptorFactory(SchemaProvider())
+    factory = streams.DescriptorFactory(SchemaProvider())
 
     assert factory.campaign() == Descriptor(
         "campaign",
@@ -50,7 +50,7 @@ def test_campaign():
 
 
 def test_campaign_flat_descriptor():
-    factory = stream.DescriptorFactory(SchemaProvider())
+    factory = streams.DescriptorFactory(SchemaProvider())
 
     assert factory.campaign_flat() == Descriptor(
         "campaign_flat",
@@ -61,7 +61,7 @@ def test_campaign_flat_descriptor():
 
 
 def test_campaign_level_reports():
-    factory = stream.DescriptorFactory(SchemaProvider())
+    factory = streams.DescriptorFactory(SchemaProvider())
 
     assert factory.campaign_level_reports() == Descriptor(
         "campaign_level_reports",
@@ -72,7 +72,7 @@ def test_campaign_level_reports():
 
 
 def test_campaign_level_reports_extended_spend_row():
-    factory = stream.DescriptorFactory(SchemaProvider())
+    factory = streams.DescriptorFactory(SchemaProvider())
 
     assert factory.campaign_level_reports_extended_spend_row() == Descriptor(
         "campaign_level_reports_extended_spend_row",
@@ -87,7 +87,7 @@ def test_campaign_level_reports_extended_spend_row():
 
 
 def test_campaign_level_reports_extended_spend_row_flat():
-    factory = stream.DescriptorFactory(SchemaProvider())
+    factory = streams.DescriptorFactory(SchemaProvider())
 
     assert factory.campaign_level_reports_extended_spend_row_flat() == Descriptor(
         "campaign_level_reports_extended_spend_row_flat",
