@@ -16,7 +16,7 @@ from tap_apple_search_ads.api import auth, campaign, campaign_level_reports
 from tap_apple_search_ads.api.auth import client_secret
 from tap_apple_search_ads.schema.from_file import api as schema
 from tap_apple_search_ads.stream import concrete as streams
-from tap_apple_search_ads.stream.core import Descriptor, Stream
+from tap_apple_search_ads.stream.core import Descriptor
 
 logger = singer.get_logger()
 
@@ -53,10 +53,12 @@ def main():
 
 def do_discover(config: Dict[str, Any]) -> int:
     schema_loader = create_schema_loader()
-    streams = create_default_streams(schema_loader) + create_dynamic_streams(
-        config, schema_loader
-    )
-    descriptors = [stream.descriptor() for stream in streams]
+    descriptor_factory = streams.DescriptorFactory(schema_loader)
+
+    default = create_default_descriptors(descriptor_factory)
+    dynamic = create_dynamic_descriptors(config, descriptor_factory)
+    descriptors = default + dynamic
+
     descriptors_dict = [descriptor.dict() for descriptor in descriptors]
 
     result = {"streams": descriptors_dict}
@@ -76,16 +78,6 @@ def create_schema_loader() -> schema.Facade:
     return facade
 
 
-def create_default_streams(schema_provider: schema.Facade) -> List[Stream]:
-    return [
-        streams.Campaign.from_schema_provider(schema_provider),
-        streams.CampaignFlat.from_schema_provider(schema_provider),
-        streams.CampaignLevelReports.from_schema_provider(schema_provider),
-        streams.ExtendedSpendRow.from_schema_provider(schema_provider),
-        streams.ExtendedSpendRowFlat.from_schema_provider(schema_provider),
-    ]
-
-
 def create_default_descriptors(factory: streams.DescriptorFactory) -> List[Descriptor]:
     return [
         factory.campaign(),
@@ -94,48 +86,6 @@ def create_default_descriptors(factory: streams.DescriptorFactory) -> List[Descr
         factory.campaign_level_reports_extended_spend_row(),
         factory.campaign_level_reports_extended_spend_row_flat(),
     ]
-
-
-def create_dynamic_streams(
-    config: Dict[str, Any], schema_provider: schema.Facade
-) -> List[Stream]:
-    dynamic_streams: List[Stream] = []
-
-    if "selectors" in config:
-        selector_streams = create_selector_streams(config["selectors"], schema_provider)
-        dynamic_streams.extend(selector_streams)
-
-    return dynamic_streams
-
-
-def create_selector_streams(
-    selectors: Dict[str, Dict[str, Any]], schema_provider: schema.Facade
-) -> List[Stream]:
-    selector_streams: List[Stream] = []
-
-    for name in selectors:
-        clr_streams = create_clr_streams(name, schema_provider)
-        selector_streams.extend(clr_streams.values())
-
-    return selector_streams
-
-
-def create_clr_streams(
-    selector_name: str, schema_provider: schema.Facade
-) -> Dict[str, Stream]:
-    clr_streams_base: List[Stream] = [
-        streams.CampaignLevelReports.from_schema_provider(schema_provider),
-        streams.ExtendedSpendRow.from_schema_provider(schema_provider),
-        streams.ExtendedSpendRowFlat.from_schema_provider(schema_provider),
-    ]
-
-    clr_streams: Dict[str, Stream] = {}
-    for stream in clr_streams_base:
-        descriptor = stream.descriptor()
-        stream.set_descriptor(add_selector_name(descriptor, selector_name))
-        clr_streams[descriptor.tap_stream_id] = stream
-
-    return clr_streams
 
 
 def create_dynamic_descriptors(
