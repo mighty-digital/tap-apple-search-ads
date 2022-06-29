@@ -40,19 +40,175 @@ PS C:\tap-apple-search-ads-tutorial>
 (tap) tap-apple-search-ads.exe --config .\config.json --discover > catalog.json
 ```
 
-## Configuration
+## Usage
 
-Required `config.json` values:
+To use the Tap, you need to create the `config.json` file with values required to access the [Apple Search Ads API](https://developer.apple.com/documentation/apple_search_ads).
 
-- `client_id: string`
-- `key_id: string`
-- `team_id: string`
-- `org_id: string or integer`
-- `private_key_value: string` - literal private key value as string (joined with `\n` character); or `private_key_file: string` - path to file with private key value
+### Creating the config.json file
 
-Obtain all of the values by following [Implementing OAuth for the Apple Search Ads API](https://developer.apple.com/documentation/apple_search_ads/implementing_oauth_for_the_apple_search_ads_api) guide up to and including "Upload a Public Key" step. "Create a Client Secret" step and the following steps are implemented in the Tap itself.
+To access the Search Ads API you need to create Public and Private Key pair and upload the Public Key to the Search Ads UI.
+
+If you already have the Public Key uploaded, use the `clientId, teamId, keyId` values associated with the existing key.
+
+If not, follow the steps outlined in [Implementing OAuth for the Apple Search Ads API](https://developer.apple.com/documentation/apple_search_ads/implementing_oauth_for_the_apple_search_ads_api). Complete the "Invite Users", "Generate a Private Key", "Extract a Public Key", "Upload a Public Key" steps to obtain the `clientId, teamId, keyId` values.
+
+To generate the Private and Public Key pair you need to have `openssl` program installed and configured to complete the steps. `openssl` program is usually already installed in most Linux distributions by default. In Windows, you can either use the `openssl` program vendored with [Git for Windows](https://gitforwindows.org/) or [Miniconda/Anaconda](https://docs.conda.io/en/latest/miniconda.html) (or similar), or get the binary from the [OpenSSL](https://wiki.openssl.org/index.php/Binaries).
+
+`config.json` values required for Apple Search Ads API:
+
+- `org_id: string or integer` - Apple Search Ads Organization ID, obtained from Apple Search Ads console.
+- `client_id: string` - obtained from "Implementing OAuth for the Apple Search Ads API".
+- `key_id: string` - obtained from "Implementing OAuth for the Apple Search Ads API".
+- `team_id: string` - obtained from "Implementing OAuth for the Apple Search Ads API".
+- `private_key_file: string` - path to the `private-key.pem` file obtained from "Implementing OAuth for the Apple Search Ads API".
+- `private_key_value: string` -  contents of the `private-key.pem` file as string (joined with `\n` character).
+
+You only need one of the private key values (`private_key_file` or `private_key_value`) in the `config.json` file.
+
+After creating the `config.json` file and filling it with the relevant values, proceed to the **Discovery** step.
+
+### Discovery
+
+First step of the actual Tap usage is the Discovery:
+
+```pwsh.exe
+tap-apple-search-ads.exe --config .\config.json --discover > catalog.json
+```
+
+This command will create the `catalog.json` file in the current working directory. This file contains descriptions of the available streams, and their metadata. By default, every stream metadata consists only from the selection marker, and every stream is NOT selected by default. To enable the stream for syncing, you need to alter the default `catalog.json`. Locate the relevant stream object in the `catalog.json`, then locate the `metadata` array inside the stream object, then locate the object with `"breadcrumb": []` and set the `"selected"` value of the object to `true`.
+
+Currently, per-field metadata is not used, only whole streams can be enabled or disabled.
+
+After creating the `catalog.json` file and selecting desired streams in the file, proceed to the **Sync** step.
+
+### Sync
+
+Running the Tap with the `--catalog` option will enable the Sync mode.
+
+```pwsh
+tap-apple-search-ads.exe --config .\config.json --catalog .\catalog.json
+```
+
+This command will output the Singer messages to the STDOUT. Output of the command can be piped directly into the Singer Targets.
+
+### Usage Example.
+
+In this example you will learn to run the `tap-apple-search-ads`, starting with installation and ending with the "campaign_flat" stream sync.
+
+#### Installation
+
+```pwsh
+PS C:\tap-apple-search-ads-tutorial>
+git clone https://github.com/mighty-digital/tap-apple-search-ads
+PS C:\tap-apple-search-ads-tutorial>
+python.exe -m venv .envs/tap
+PS C:\tap-apple-search-ads-tutorial>
+.\.envs\tap\Scripts\Activate.ps1
+PS C:\tap-apple-search-ads-tutorial>
+(tap) pip install './tap-apple-search-ads'
+```
+
+#### Creation of the config.json
+
+Ensure that `private-key.pem` file is created and located in the `C:\tap-apple-search-ads-tutorial` directory.
+
+```pwsh
+PS C:\tap-apple-search-ads-tutorial>
+Write-Output '{
+>>   "client_id": "<your clientId>",
+>>   "team_id": "<your teamId>",
+>>   "key_id": "<your keyId>",
+>>   "org_id": "<your orgId>",
+>>   "private_key_value": "C:/tap-apple-search-ads-tutorial/private-key.pem"
+>> }' | Out-File config.json
+```
+
+#### Discovery
+
+```pwsh
+# Obtain the catalog.json
+PS C:\tap-apple-search-ads-tutorial>
+(tap) tap-apple-search-ads.exe --config .\config.json --discover > catalog.json
+# Edit the catalog.json
+PS C:\tap-apple-search-ads-tutorial>
+(tap) nvim.exe catalog.json
+# Locate the "stream": "campaign_flat" object:
+{
+  "stream": "campaign_flat",
+  "tap_stream_id": "campaign_flat",
+  "schema": {
+    ...
+  },
+  "metadata": [
+    {
+      "metadata": {
+        "selected": false
+      },
+      "breadcrumb": []
+    }
+  ]
+}
+# Set the "selected" field to true
+{
+  "stream": "campaign_flat",
+  "tap_stream_id": "campaign_flat",
+  "schema": {
+    ...
+  },
+  "metadata": [
+    {
+      "metadata": {
+        "selected": true
+      },
+      "breadcrumb": []
+    }
+  ]
+}
+# Save the file
+```
+
+#### Sync
+
+We will use the `target-csv` package as a Singer Target. This package requires different version of the `singer-python`, so it will be installed into the different venv.
+
+```pwsh
+PS C:\tap-apple-search-ads-tutorial>
+(tap) deactivate
+PS C:\tap-apple-search-ads-tutorial>
+python.exe -m venv .envs/target
+PS C:\tap-apple-search-ads-tutorial>
+.\.envs\target\Scripts\Activate.ps1
+PS C:\tap-apple-search-ads-tutorial>
+(target) pip install target-csv
+PS C:\tap-apple-search-ads-tutorial>
+(target) deactivate
+PS C:\tap-apple-search-ads-tutorial>
+.\.envs\tap\Scripts\tap-apple-search-ads.exe --config .\config.json --catalog .\catalog.json | .\.envs\target\Scripts\target-csv.exe
+PS C:\tap-apple-search-ads-tutorial>
+cat .\campaign_flat-20220629T154605.csv
+```
+
+If you have any campaigns in your Apple Search Ads Organization, their data will be stored in the generated `.csv` file.
 
 ## Development
+
+To work on the Tap development, install additional dependencies from the `setup.cfg` file. Possible contributions:
+
+* Adding additional API Endpoints and corresponding Streams.
+* Adding more Singer metadata - per-field metadata parsing and usage.
+
+### Installation for development
+
+```pwsh
+PS C:\tap-apple-search-ads-tutorial>
+git clone https://github.com/mighty-digital/tap-apple-search-ads
+PS C:\tap-apple-search-ads-tutorial>
+python.exe -m venv .envs/tap
+PS C:\tap-apple-search-ads-tutorial>
+.\.envs\tap\Scripts\Activate.ps1
+PS C:\tap-apple-search-ads-tutorial>
+(tap) pip install './tap-apple-search-ads[dev,test]'
+```
 
 ### pre-commit
 
