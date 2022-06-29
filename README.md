@@ -119,7 +119,7 @@ Write-Output '{
 >>   "team_id": "<your teamId>",
 >>   "key_id": "<your keyId>",
 >>   "org_id": "<your orgId>",
->>   "private_key_value": "C:/tap-apple-search-ads-tutorial/private-key.pem"
+>>   "private_key_file": "C:/tap-apple-search-ads-tutorial/private-key.pem"
 >> }' | Out-File config.json
 ```
 
