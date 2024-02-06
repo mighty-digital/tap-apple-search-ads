@@ -58,6 +58,7 @@ def do_discover() -> int:
                 "stream": stream,
                 "tap_stream_id": stream,
                 "schema": stream_schema,
+                "key_properties": ["id"],
                 "metadata": [
                     {
                         "metadata": {
@@ -204,7 +205,7 @@ def sync_stream(
     start_time = time.monotonic()
     logger.info("%s: Starting sync", stream_name)
 
-    singer.write_schema(stream_name, stream.schema.to_dict(), [])
+    singer.write_schema(stream_name, stream.schema.to_dict(), ["id"])
 
     count = sync_concrete_stream(stream_name, headers, additional)
 
