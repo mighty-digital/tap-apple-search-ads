@@ -35,13 +35,13 @@ def sync(headers: RequestHeadersValue) -> List[Dict[str, Any]]:
 def to_schema(record: Dict[str, Any]) -> Dict[str, Any]:
     budgetAmount = record.pop("budgetAmount")
 
-    record["budgetAmount_currency"] = budgetAmount["currency"]
-    record["budgetAmount_amount"] = budgetAmount["amount"]
+    record["budgetAmount_currency"] = budgetAmount["currency"] if budgetAmount else None
+    record["budgetAmount_amount"] = budgetAmount["amount"] if budgetAmount else None
 
     dailyBudgetAmount = record.pop("dailyBudgetAmount")
 
-    record["dailyBudgetAmount_currency"] = dailyBudgetAmount["currency"]
-    record["dailyBudgetAmount_amount"] = dailyBudgetAmount["amount"]
+    record["dailyBudgetAmount_currency"] = dailyBudgetAmount["currency"] if dailyBudgetAmount else None
+    record["dailyBudgetAmount_amount"] = dailyBudgetAmount["amount"] if dailyBudgetAmount else None
 
     for key in PROPERTIES_TO_SERIALIZE:
         value = record.pop(key)
