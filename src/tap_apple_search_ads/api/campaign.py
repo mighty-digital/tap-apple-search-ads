@@ -13,6 +13,9 @@ logger = singer.get_logger()
 
 DEFAULT_URL = "https://api.searchads.apple.com/api/v4/campaigns"
 
+# limit=1000 is the maximum allowed, pagination is required to get more items
+DEFAULT_QUERY_PARAMS = {"limit": 1000}
+
 PROPERTIES_TO_SERIALIZE = {
     "budgetOrders",
     "countriesOrRegions",
@@ -25,7 +28,7 @@ PROPERTIES_TO_SERIALIZE = {
 
 def sync(headers: RequestHeadersValue) -> List[Dict[str, Any]]:
     logger.info("Sync: campaigns")
-    response = requests.get(DEFAULT_URL, headers=headers)
+    response = requests.get(DEFAULT_URL, headers=headers, params=DEFAULT_QUERY_PARAMS)
     api.utils.check_response(response)
     campaigns = response.json()["data"]
     logger.info("Synced [%s] campaings", len(campaigns))
