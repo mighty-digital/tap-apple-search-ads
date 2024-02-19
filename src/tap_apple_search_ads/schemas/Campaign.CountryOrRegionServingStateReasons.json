@@ -9,7 +9,8 @@
         "SAPIN_LAW_AGENT_UNKNOWN",
         "SAPIN_LAW_FRENCH_BIZ_UNKNOWN",
         "SAPIN_LAW_FRENCH_BIZ"
-      ]
+      ],
+      "type": "string"
     }
   }
 }

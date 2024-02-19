@@ -106,13 +106,15 @@
         },
         "campaignStatus": {
           "enum": ["ENABLED", "PAUSED"],
+          "type": "string",
           "default": "ENABLED"
         },
         "app": {
           "$ref": "#/$defs/App"
         },
         "servingStatus": {
-          "enum": ["NOT_RUNNING", "RUNNING"]
+          "enum": ["NOT_RUNNING", "RUNNING"],
+          "type": "string"
         },
         "servingStateReasons": {
           "type": ["null", "array"],
@@ -145,7 +147,8 @@
               "SAPIN_LAW_FRENCH_BIZ",
               "TAX_VERIFICATION_PENDING",
               "TOTAL_BUDGET_EXHAUSTED"
-            ]
+            ],
+            "type": "string"
           }
         },
         "countriesOrRegions": {
@@ -165,16 +168,19 @@
           "$ref": "Money.json"
         },
         "displayStatus": {
-          "enum": ["DELETED", "ON_HOLD", "PAUSED", "RUNNING"]
+          "enum": ["DELETED", "ON_HOLD", "PAUSED", "RUNNING"],
+          "type": "string"
         },
         "supplySources": {
           "type": "array",
           "items": {
-            "enum": ["APPSTORE_SEARCH_RESULTS", "APPSTORE_SEARCH_TAB"]
+            "enum": ["APPSTORE_SEARCH_RESULTS", "APPSTORE_SEARCH_TAB"],
+            "type": "string"
           }
         },
         "adChannelType": {
-          "enum": ["DISPLAY", "SEARCH"]
+          "enum": ["DISPLAY", "SEARCH"],
+          "type": "string"
         },
         "orgId": {
           "type": "integer"
@@ -183,7 +189,8 @@
           "$ref": "Campaign.CountryOrRegionServingStateReasons.json"
         },
         "billingEvent": {
-          "enum": ["IMPRESSIONS", "TAPS"]
+          "enum": ["IMPRESSIONS", "TAPS"],
+          "type": "string"
         }
       }
     },

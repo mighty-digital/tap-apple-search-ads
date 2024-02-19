@@ -15,10 +15,12 @@
       "type": "integer"
     },
     "adChannelType": {
-      "enum": ["DISPLAY", "SEARCH"]
+      "enum": ["DISPLAY", "SEARCH"],
+      "type": "string"
     },
     "billingEvent": {
-      "enum": ["IMPRESSIONS", "TAPS"]
+      "enum": ["IMPRESSIONS", "TAPS"],
+      "type": "string"
     },
     "budgetAmount_currency": {
       "$ref": "currency.json"
@@ -46,7 +48,8 @@
       "default": false
     },
     "displayStatus": {
-      "enum": ["DELETED", "ON_HOLD", "PAUSED", "RUNNING"]
+      "enum": ["DELETED", "ON_HOLD", "PAUSED", "RUNNING"],
+      "type": "string"
     },
     "endTime": {
       "type": ["null", "string"],
@@ -70,13 +73,15 @@
       "type": "integer"
     },
     "paymentModel": {
-      "enum": ["LOC", "PAYG", ""]
+      "enum": ["LOC", "PAYG", ""],
+      "type": "string"
     },
     "servingStateReasons": {
       "type": ["null", "string"]
     },
     "servingStatus": {
-      "enum": ["NOT_RUNNING", "RUNNING"]
+      "enum": ["NOT_RUNNING", "RUNNING"],
+      "type": "string"
     },
     "startTime": {
       "type": "string",
@@ -84,6 +89,7 @@
     },
     "status": {
       "enum": ["ENABLED", "PAUSED"],
+      "type": "string",
       "default": "ENABLED"
     },
     "supplySources": {

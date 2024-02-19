@@ -1,3 +1,4 @@
 {
-  "enum": ["AUD", "CAD", "EUR", "GBP", "JPY", "MXN", "NZD", "RMB", "RUB", "USD"]
+  "enum": ["AUD", "CAD", "EUR", "GBP", "JPY", "MXN", "NZD", "RMB", "RUB", "USD"],
+  "type": "string"
 }
