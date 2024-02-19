@@ -13,7 +13,8 @@
         "RMB",
         "RUB",
         "USD"
-      ]
+      ],
+      "type": "string"
     },
     "amount": {
       "type": "string"

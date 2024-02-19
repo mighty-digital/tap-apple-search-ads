@@ -15,10 +15,12 @@
       "type": "integer"
     },
     "adChannelType": {
-      "enum": ["DISPLAY", "SEARCH"]
+      "enum": ["DISPLAY", "SEARCH"],
+      "type": "string"
     },
     "billingEvent": {
-      "enum": ["IMPRESSIONS", "TAPS"]
+      "enum": ["IMPRESSIONS", "TAPS"],
+      "type": "string"
     },
     "budgetAmount": {
       "$ref": "Money.json"
@@ -46,7 +48,8 @@
       "default": false
     },
     "displayStatus": {
-      "enum": ["DELETED", "ON_HOLD", "PAUSED", "RUNNING"]
+      "enum": ["DELETED", "ON_HOLD", "PAUSED", "RUNNING"],
+      "type": "string"
     },
     "endTime": {
       "type": ["null", "string"],
@@ -70,7 +73,8 @@
       "type": "integer"
     },
     "paymentModel": {
-      "enum": ["LOC", "PAYG", ""]
+      "enum": ["LOC", "PAYG", ""],
+      "type": "string"
     },
     "servingStateReasons": {
       "type": ["null", "array"],
@@ -103,11 +107,13 @@
           "SAPIN_LAW_FRENCH_BIZ",
           "TAX_VERIFICATION_PENDING",
           "TOTAL_BUDGET_EXHAUSTED"
-        ]
+        ],
+        "type": "string"
       }
     },
     "servingStatus": {
-      "enum": ["NOT_RUNNING", "RUNNING"]
+      "enum": ["NOT_RUNNING", "RUNNING"],
+      "type": "string"
     },
     "startTime": {
       "type": "string",
@@ -115,12 +121,14 @@
     },
     "status": {
       "enum": ["ENABLED", "PAUSED"],
+      "type": "string",
       "default": "ENABLED"
     },
     "supplySources": {
       "type": "array",
       "items": {
-        "enum": ["APPSTORE_SEARCH_RESULTS", "APPSTORE_SEARCH_TAB"]
+        "enum": ["APPSTORE_SEARCH_RESULTS", "APPSTORE_SEARCH_TAB"],
+        "type": "string"
       }
     }
   },
